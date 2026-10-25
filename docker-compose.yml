@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  fraud-detection-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fraud_guard_service
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    environment:
+      - ENVIRONMENT=production
+      - PORT=8000
+      - HOST=0.0.0.0
+      - FRAUD_PROBABILITY_THRESHOLD=0.35
+      - REVIEW_PROBABILITY_THRESHOLD=0.20
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

@@ -1,0 +1,26 @@
+{
+  "pr_auc": 1.0,
+  "roc_auc": 1.0,
+  "decision_threshold": 0.998,
+  "fraud_precision": 1.0,
+  "fraud_recall": 0.875,
+  "fraud_f1_score": 0.9333,
+  "confusion_matrix": {
+    "true_negatives": 3992,
+    "false_positives": 0,
+    "false_negatives": 1,
+    "true_positives": 7
+  },
+  "financial_cost_score": 500.0,
+  "sample_counts": {
+    "total": 4000,
+    "fraud_actual": 8,
+    "fraud_detected": 7,
+    "fraud_missed": 1,
+    "false_alarms": 0
+  },
+  "cv_mean_pr_auc": 0.9803,
+  "cv_std_pr_auc": 0.0245,
+  "algorithm": "XGBoost Classifier",
+  "scale_pos_weight": 499.0
+}
