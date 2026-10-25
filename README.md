@@ -80,18 +80,19 @@ docker-compose up --build
 - **Interactive Swagger Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
 - **Embedded Analyst Dashboard**: [http://localhost:8000/dashboard](http://localhost:8000/dashboard)
 
-#### Using Root NPM Scripts (Concurrent / Convenient):
+#### Using Root NPM Scripts (Concurrent / Single-Command):
 From the project root:
 ```bash
 # 1. Install all dependencies
 npm run backend:install
 npm run frontend:install
 
-# 2. Run backend in one terminal
-npm run backend:dev
+# 2. Run both frontend and backend concurrently in a single command
+npm run dev
 
-# 3. Run frontend in another terminal
-npm run frontend:dev
+# Or run them independently from the root:
+npm run dev:backend    # FastAPI server on http://127.0.0.1:8000
+npm run dev:frontend   # Next.js app on http://localhost:3000
 ```
 
 ---
@@ -223,6 +224,115 @@ This repository uses a persistent context system for continuous AI alignment:
 - [`memory.md`](./memory.md) - Living knowledge base, active schemas, and roadmap.
 - [`phases.md`](./phases.md) - Implementation milestones and tracking.
 - [`changelog.md`](./changelog.md) - Keep-a-Changelog SemVer change history.
+
+---
+
+## 🚀 Step-by-Step Production Deployment Guide
+
+You can deploy the decoupled Frontend and Backend using **Docker Compose** (single VPS / VM) or via **Modern Cloud Services** (Vercel for Frontend + Render / Railway for Backend).
+
+### Strategy A: Cloud Microservice Deployment (Vercel + Render / Railway)
+
+This is the recommended modern architecture for decoupled web applications.
+
+#### Part 1: Deploy Backend (FastAPI + XGBoost Inference Engine)
+Deploying to **Render**, **Railway**, or **Fly.io**:
+
+1. **Push your code to GitHub**:
+   Ensure all changes are committed and pushed to your GitHub repository.
+
+2. **Create New Web Service on Render / Railway**:
+   - Log into [Render](https://render.com) or [Railway](https://railway.app).
+   - Select **New Web Service** and connect your GitHub repository.
+   - Set **Root Directory**: `backend`
+   - Set **Runtime**: `Python 3` (or **Docker** using `backend/Dockerfile`).
+   - If using Python native runtime:
+     - **Build Command**: `pip install -r requirements.txt`
+     - **Start Command**: `uvicorn src.api.main:app --host 0.0.0.0 --port $PORT`
+
+3. **Configure Backend Environment Variables**:
+   Under the service **Environment Variables** tab, define:
+   ```env
+   ENVIRONMENT=production
+   PORT=8000
+   HOST=0.0.0.0
+   FRAUD_PROBABILITY_THRESHOLD=0.35
+   REVIEW_PROBABILITY_THRESHOLD=0.20
+   DATABASE_URL=sqlite:///./data/fraud_audit.db
+   CORS_ORIGINS=["https://your-frontend-domain.vercel.app","http://localhost:3000"]
+   SUPABASE_URL=https://eufrawprayanwthhuvaj.supabase.co
+   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+   ```
+
+4. **Verify Deployment**:
+   Once build completes, verify health via:
+   `https://your-backend-api.onrender.com/api/v1/health`
+
+---
+
+#### Part 2: Deploy Frontend (Next.js + Sentinel Studio)
+Deploying to **Vercel** (the native host for Next.js):
+
+1. **Import Project to Vercel**:
+   - Log into [Vercel](https://vercel.com) and click **Add New Project**.
+   - Select your GitHub repository.
+
+2. **Configure Project Settings**:
+   - **Root Directory**: Click *Edit* and select `frontend`.
+   - **Framework Preset**: `Next.js` (automatically detected).
+   - **Build Command**: `next build` (default).
+   - **Output Directory**: `.next` (default).
+
+3. **Configure Frontend Environment Variables**:
+   Under **Environment Variables**, provide:
+   ```env
+   NEXT_PUBLIC_API_URL=https://your-backend-api.onrender.com/api/v1
+   NEXT_PUBLIC_SUPABASE_URL=https://eufrawprayanwthhuvaj.supabase.co
+   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_3YczReP6yNU8WPGQuS8V9A_CFJaeYA1
+   ```
+
+4. **Deploy**:
+   - Click **Deploy**. Vercel will install dependencies, compile the TypeScript App Router pages, and link all assets.
+   - Your Next.js app will be live at `https://your-frontend.vercel.app/`
+   - Your static Sentinel Triage Studio workstation will be available at `https://your-frontend.vercel.app/index.html`.
+
+---
+
+### Strategy B: Docker & Docker Compose Deployment (Single VPS / AWS EC2 / DigitalOcean)
+
+Ideal for deploying the entire platform on a single virtual server:
+
+1. **SSH into your server and install Docker & Docker Compose**:
+   ```bash
+   sudo apt update
+   sudo apt install -y docker.io docker-compose git
+   ```
+
+2. **Clone the repository**:
+   ```bash
+   git clone https://github.com/SmitKulkarni/Credit_Card_Fraud_Detection_App.git
+   cd Credit_Card_Fraud_Detection_App
+   ```
+
+3. **Verify Environment Configurations**:
+   ```bash
+   cp backend/.env.example backend/.env
+   cp frontend/.env.example frontend/.env
+   ```
+
+4. **Build and Launch Containers in Detached Mode**:
+   ```bash
+   docker-compose up -d --build
+   ```
+
+5. **Inspect Running Containers**:
+   ```bash
+   docker-compose ps
+   docker-compose logs -f
+   ```
+   - **Frontend**: Accessible on `http://<your-server-ip>:3000`
+   - **Backend API**: Accessible on `http://<your-server-ip>:8000/api/v1`
+   - **Swagger Docs**: Accessible on `http://<your-server-ip>:8000/docs`
 
 ---
 

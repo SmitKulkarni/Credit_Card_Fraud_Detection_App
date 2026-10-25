@@ -4,11 +4,18 @@
   "private": true,
   "description": "Credit Card Fraud Detection App with separated frontend and backend subfolders",
   "scripts": {
+    "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"cyan.bold,magenta.bold\" \"npm run backend:dev\" \"npm run frontend:dev\"",
+    "dev:backend": "npm run backend:dev",
+    "dev:frontend": "npm run frontend:dev",
+    "build": "npm --prefix frontend run build",
+    "start": "concurrently -n \"BACKEND,FRONTEND\" -c \"cyan.bold,magenta.bold\" \"npm run backend:start\" \"npm run frontend:start\"",
     "frontend:install": "npm --prefix frontend install",
     "frontend:dev": "npm --prefix frontend run dev",
     "frontend:build": "npm --prefix frontend run build",
+    "frontend:start": "npm --prefix frontend run start",
     "backend:install": "pip install -r backend/requirements.txt",
     "backend:dev": "npm --prefix backend run dev",
+    "backend:start": "npm --prefix backend run start",
     "backend:test": "npm --prefix backend run test",
     "backend:train": "npm --prefix backend run train",
     "test": "npm --prefix backend run test"
@@ -20,5 +27,8 @@
     "nextjs",
     "fintech"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^10.0.6"
+  }
 }

@@ -27,16 +27,14 @@ services:
       start_period: 10s
 
   frontend:
-    image: node:20-alpine
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     container_name: fraud_guard_frontend
-    working_dir: /app
-    volumes:
-      - ./frontend:/app
     ports:
       - "3000:3000"
-    command: sh -c "npm install && npm run dev"
     environment:
-      - NEXT_PUBLIC_API_URL=http://backend:8000/api/v1
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
     depends_on:
       backend:
         condition: service_healthy

@@ -19,6 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed (Dev Workflow & Next.js App Router)
+- Added missing root `npm run dev` script using `concurrently` to spin up both FastAPI backend (:8000) and Next.js frontend (:3000) simultaneously with unified color-coded logging.
+- Created `frontend/src/app/layout.tsx` and `frontend/src/app/page.tsx` resolving Next.js 15 App Router directory requirement (`Couldn't find any 'pages' or 'app' directory`).
+- Created `frontend/next.config.mjs` configuring `outputFileTracingRoot` to resolve monorepo multi-lockfile workspace inference warnings.
+- Added `frontend/Dockerfile` production multi-stage build container and updated `docker-compose.yml`.
+- Added comprehensive step-by-step production deployment documentation covering Vercel, Render/Railway, and Docker Compose.
+
 ### Added (Enterprise Security & Biometrics)
 - Implemented Enterprise Authentication gateway in `frontend/src/index.html` with Sign In and Create Account modes.
 - Added `frontend/src/js/auth.js` providing WebAuthn / FIDO2 Passkey biometric authentication (Windows Hello, Touch ID, Face ID).
