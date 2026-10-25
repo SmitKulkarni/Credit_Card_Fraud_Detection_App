@@ -6,24 +6,37 @@ __pycache__/
 
 # Environments & Virtual Envs
 .env
+.env.local
+.env.*.local
+frontend/.env
+backend/.env
 .venv
+node_modules/
+frontend/node_modules/
+.next/
 env/
 venv/
 ENV/
 build/
 dist/
 *.egg-info/
+*.tsbuildinfo
 
 # Unit test / coverage reports
 .pytest_cache/
 .coverage
 htmlcov/
 
+# Databases & SQLite
+*.db
+*.sqlite3
+backend/data/*.db
+
 # Data & Datasets (Preserve directory structure via .gitkeep)
-data/raw/*
-!data/raw/.gitkeep
-data/processed/*
-!data/processed/.gitkeep
+backend/data/raw/*
+!backend/data/raw/.gitkeep
+backend/data/processed/*
+!backend/data/processed/.gitkeep
 
 # Serialized Model Artifacts larger than 50MB
 *.pkl
@@ -33,3 +46,4 @@ data/processed/*
 .vscode/
 .idea/
 *.swp
+

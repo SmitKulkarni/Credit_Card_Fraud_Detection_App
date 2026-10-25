@@ -17,59 +17,57 @@ This file serves as the single source of truth for the ongoing state, architectu
 
 | Layer | Technology | Purpose |
 | :--- | :--- | :--- |
-| **Backend & API** | Python 3.10+, FastAPI, Pydantic v2, Uvicorn | Asynchronous REST API, input validation, high-throughput model serving |
-| **Machine Learning Core** | Scikit-Learn, XGBoost, LightGBM, Joblib / ONNX | Classification, probability estimation, pipeline serialization |
-| **Explainability (XAI)** | SHAP (`TreeExplainer`), Matplotlib/Plotly (optional) | Per-transaction feature contribution breakdown |
-| **Data Processing** | Pandas, NumPy, Scipy | Tabular feature transformations, scaling, train/test splitting |
-| **Frontend / Dashboard** | HTML5, Modern Vanilla CSS3 (Custom Design System), ES6+ JS | Responsive financial analyst dashboard, risk meter, live testing |
-| **Testing & Quality** | Pytest, Flake8 / Black, HTTPX | Automated unit, schema, and API integration testing |
-| **Storage & Caching** | SQLite / PostgreSQL (planned), Local File Artifacts | Transaction audit logs, model registry, metrics cache |
+| **Backend & API** | Python 3.10+, FastAPI, Pydantic v2, Uvicorn (`backend/`) | Asynchronous REST API, input validation, high-throughput model serving |
+| **Machine Learning Core** | Scikit-Learn, XGBoost, Joblib (`backend/src/ml/`) | Cost-sensitive classification, probability estimation, pipeline serialization |
+| **Explainability (XAI)** | SHAP (`TreeExplainer`), PSI Drift Detector | Per-transaction feature contribution breakdown, concept drift monitoring |
+| **Database & Auditing** | SQLite, SQLAlchemy (`backend/data/fraud_audit.db`) | Transaction audit logs, model registry, metrics cache |
+| **Frontend UI** | Next.js 15, React 19, TypeScript, Vanilla CSS3 (`frontend/`) | Sentinel Triage Studio, responsive financial analyst workstation, radial gauge |
+| **Auth & Cloud Services** | Supabase (`@supabase/ssr`, `@supabase/supabase-js`) | Session refresh, Supabase client helpers & server components |
+| **Testing & CI** | Pytest, TypeScript (`tsc`), GitHub Actions | Automated backend unit testing (28/28 passing) and frontend type-checking |
 
 ---
 
 ## 3. Features Completed
 
 - [x] **Repository & Version Control Initialization:** Git repository setup and structure initialized.
-- [x] **Persistent AI Context Architecture:**
-  - `decisions.md` (ADR framework & fundamental decisions)
-  - `rules.md` (Coding standards, folder structure, UI/UX, security, non-destructive rules)
-  - `memory.md` (Long-term state, schema, business logic, and roadmap)
-  - `phases.md` (4-phase implementation roadmap, task checklists, and acceptance criteria)
-  - `changelog.md` (Keep-a-Changelog tracking)
-- [x] **System Architecture Design:** Decoupled FastAPI backend and modern UI dashboard specification.
-- [x] **Phase 1: Machine Learning Core Pipeline:**
-  - `src/ml/data_loader.py`: Ingestion, schema validation, and high-fidelity synthetic fallback generator.
-  - `src/ml/preprocessor.py`: Outlier-resistant `RobustScaler` for Amount, Time normalization, aligned 30-feature vector.
-  - `src/ml/train.py`: Stratified 5-Fold cross-validation (`CV PR-AUC = 0.9803 +/- 0.0245`), `scale_pos_weight = 499.0`.
-  - `src/ml/evaluate.py`: PR-AUC, ROC-AUC, financial cost matrix, F1-based threshold calibration.
-  - `src/ml/explainer.py`: Exact Tree SHAP feature contribution extraction and human-readable risk factors.
-  - `src/ml/predictor.py`: Real-time (`< 15ms`) and vectorized batch inference engine with caching.
-  - `tests/test_ml.py`: 11 unit & integration tests passing (100% pass rate).
-  - Serialized Artifacts: `models/preprocessor.joblib`, `models/fraud_detector_xgb.joblib`, `models/model_metrics.json`.
-- [x] **Phase 2: High-Performance FastAPI Serving Engine:**
-  - `src/api/main.py`: Application factory, async lifespan model loading into state, CORS, exception handlers.
-  - `src/api/config.py`: Centralized Pydantic Settings reading environment configurations.
-  - `src/api/schemas/transaction.py`: Pydantic v2 schemas (`TransactionInput`, `PredictionResponse`, `BatchTransactionRequest`).
-  - `src/api/routes/health.py`: Live health inspection and model registry metadata.
-  - `src/api/routes/predict.py`: Real-time scoring, batch scoring, and 3 curated presets.
-  - `src/api/routes/analytics.py`: Real-time rolling session statistics and latency percentiles.
-  - `tests/test_api.py`: 9 integration tests covering all routes, presets, and validation edge cases.
-
-- [x] **Phase 3: Interactive Analyst Dashboard & XAI Visualization:**
-  - `src/ui/index.html`: Responsive single-page analyst workstation with KPI ribbon, dual views, and audit trail.
-  - `src/ui/css/styles.css`: FinTech dark theme design system with financial risk tokens (`#10b981`, `#f59e0b`, `#ef4444`).
-  - `src/ui/js/presets.js`: Curated scenario injectors (Normal, Suspicious, Confirmed Fraud, and Random Generator).
-  - `src/ui/js/chart.js`: Animated SVG circular risk gauge and Tree SHAP waterfall feature breakdown renderer.
-  - `src/ui/js/app.js`: Live REST client, auto-refreshing KPIs, form orchestration, and batch CSV processor with sample downloader.
-  - Mounted live dashboard at `/dashboard` endpoint in FastAPI.
-
+- [x] **Decoupled Frontend & Backend Architecture (ADR-005):**
+  - Completely separated into `frontend/` and `backend/` subdirectories with independent `package.json` files and dependencies.
+  - Root orchestration `package.json` with scripts for `backend:dev`, `frontend:dev`, `backend:test`, etc.
+  - Independent environment files: `frontend/.env` (Next.js & Supabase) and `backend/.env` (FastAPI & SQLite).
+  - Pure HTTP REST API communication from frontend to backend (`http://127.0.0.1:8000/api/v1`).
+- [x] **Phase 1: Machine Learning Core Pipeline (`backend/src/ml/`):**
+  - `backend/src/ml/data_loader.py`: Ingestion, schema validation, and high-fidelity synthetic fallback generator.
+  - `backend/src/ml/preprocessor.py`: Outlier-resistant `RobustScaler` for Amount, Time normalization, aligned 30-feature vector.
+  - `backend/src/ml/train.py`: Stratified 5-Fold cross-validation (`CV PR-AUC = 0.9803 +/- 0.0245`), `scale_pos_weight = 499.0`.
+  - `backend/src/ml/evaluate.py`: PR-AUC, ROC-AUC, financial cost matrix, F1-based threshold calibration.
+  - `backend/src/ml/explainer.py`: Exact Tree SHAP feature contribution extraction and human-readable risk factors.
+  - `backend/src/ml/predictor.py`: Real-time (`< 15ms`) and vectorized batch inference engine with caching.
+  - `backend/tests/test_ml.py`: 11 unit & integration tests passing (100% pass rate).
+  - Serialized Artifacts: `backend/models/preprocessor.joblib`, `backend/models/fraud_detector_xgb.joblib`, `backend/models/model_metrics.json`.
+- [x] **Phase 2: High-Performance FastAPI Serving Engine (`backend/src/api/`):**
+  - `backend/src/api/main.py`: Application factory, async lifespan model loading into state, CORS, exception handlers.
+  - `backend/src/api/config.py`: Centralized Pydantic Settings reading environment configurations.
+  - `backend/src/api/schemas/transaction.py`: Pydantic v2 schemas (`TransactionInput`, `PredictionResponse`, `BatchTransactionRequest`).
+  - `backend/src/api/routes/health.py`: Live health inspection and model registry metadata.
+  - `backend/src/api/routes/predict.py`: Real-time scoring, batch scoring, and 3 curated presets.
+  - `backend/src/api/routes/analytics.py`: Real-time rolling session statistics and latency percentiles.
+  - `backend/tests/test_api.py`: 10 integration tests covering all routes, presets, and validation edge cases.
+- [x] **Phase 3: Interactive Analyst Dashboard & UI (`frontend/src/`):**
+  - `frontend/src/index.html` & `frontend/public/index.html`: Responsive single-page analyst workstation with KPI ribbon, dual views, and audit trail.
+  - `frontend/src/css/styles.css`: FinTech dark theme design system with financial risk tokens (`#10b981`, `#f59e0b`, `#ef4444`).
+  - `frontend/src/js/presets.js`: Curated scenario injectors (Normal, Suspicious, Confirmed Fraud, and Random Generator).
+  - `frontend/src/js/chart.js`: Animated SVG circular risk gauge and Tree SHAP waterfall feature breakdown renderer.
+  - `frontend/src/js/app.js`: Live REST client, auto-refreshing KPIs, form orchestration, and batch CSV processor with sample downloader.
+  - `frontend/src/utils/supabase/`: Client, server, and middleware integration helpers.
+  - `frontend/src/page.tsx`: Next.js Server Component page with Supabase data querying.
 - [x] **Phase 4: Production Hardening, Monitoring & Deployment:**
-  - `src/db/`: SQLAlchemy declarative database engine and `TransactionAuditRecord` persistence model (`data/fraud_audit.db`).
-  - `src/ml/drift_detector.py`: Population Stability Index (PSI) calculator for data drift and concept drift monitoring.
-  - `Dockerfile`: Multi-stage, non-root `appuser` production image with native healthcheck.
+  - `backend/src/db/`: SQLAlchemy declarative database engine and `TransactionAuditRecord` persistence model (`backend/data/fraud_audit.db`).
+  - `backend/src/ml/drift_detector.py`: Population Stability Index (PSI) calculator for data drift and concept drift monitoring.
+  - `backend/Dockerfile`: Multi-stage, non-root `appuser` production image with native healthcheck.
   - `docker-compose.yml`: Unified service orchestration with volume persistence for `data/` and `models/`.
-  - `.github/workflows/ci.yml`: GitHub Actions CI pipeline running training smoke tests and pytest across Python 3.10 and 3.11.
-  - `tests/test_audit_and_drift.py`: 7 automated tests covering database persistence, pagination, PSI math, and drift API.
+  - `.github/workflows/ci.yml`: Isolated CI pipeline testing both `backend` (Python 3.10/3.11 pytest) and `frontend` (TypeScript check).
+  - `backend/tests/test_audit_and_drift.py`: 7 automated tests covering database persistence, pagination, PSI math, and drift API.
+
 
 ---
 

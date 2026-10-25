@@ -12,6 +12,7 @@ This document tracks all critical technical, architectural, and product decision
 | [ADR-002](#adr-002-dual-layer-application-architecture-fastapi--modern-ui) | 2026-10-25 | Dual-Layer Architecture: FastAPI & Modern UI | Accepted | Architecture |
 | [ADR-003](#adr-003-model-explainability-via-shap-integration) | 2026-10-25 | Model Explainability via SHAP Integration | Accepted | UX / Compliance |
 | [ADR-004](#adr-004-persistent-ai-context-system-adoption) | 2026-10-25 | Adoption of 4-File Persistent AI Context Framework | Accepted | Governance |
+| [ADR-005](#adr-005-decoupled-frontend-and-backend-subfolder-architecture) | 2026-10-25 | Decoupled Frontend and Backend Subfolder Architecture | Accepted | Architecture |
 
 ---
 
@@ -162,3 +163,37 @@ Ensures all AI assistants and human developers operate with unified memory, clea
 - **Positive:** Zero context loss across AI sessions; predictable code quality.
 - **Negative / Risks:** Requires discipline to update files when making major changes.
 - **Mitigation:** Codified in `rules.md` as mandatory agent behavior.
+
+---
+
+### ADR-005: Decoupled Frontend and Backend Subfolder Architecture
+
+- **Date:** 2026-10-25
+- **Status:** Accepted
+- **Deciders:** Full-Stack Architecture Team
+
+#### Context / Problem
+Previously, frontend static assets and backend Python logic resided within a single unified tree (`src/ui`, `src/api`, `src/ml`, `src/db`). As the application grew to incorporate Supabase SSR, Next.js components, and complex frontend build pipelines, coupling Python ML dependencies with Node.js dependencies caused tooling friction, deployment ambiguity, and cluttered root configurations.
+
+#### Decision Taken
+Refactor the repository into two strictly isolated subdirectories:
+- `frontend/`: Standalone Next.js & Sentinel Triage Studio UI with its own `package.json`, TypeScript configuration, Supabase client helpers, and dedicated `.env`.
+- `backend/`: Standalone FastAPI microservice containing ML models, SQLite audit trail, pytest test suite, `requirements.txt`, Dockerfile, and dedicated `.env`.
+- Root level contains only orchestration (`package.json`, `docker-compose.yml`, CI workflows) and governance documentation.
+- The frontend interacts with the backend strictly via HTTP REST API (`/api/v1/predict`, `/api/v1/health`, etc.) with CORS enabled.
+
+#### Reasoning
+- Separation of concerns: Python/ML stack runs independently from Node/TypeScript stack.
+- Independent CI/CD: Backend unit tests and frontend type checks can run in parallel.
+- Cloud deployment flexibility: Backend can be containerized to AWS/GCP/Render while frontend deploys seamlessly to Vercel/Cloudflare Pages.
+- Environment isolation: Sensitive backend database credentials never risk exposure to frontend client bundles.
+
+#### Alternatives Considered
+- **Monolithic combined `src/`:** Simpler for tiny demos, but unwieldy for modern full-stack web applications with separate Node and Python runtimes.
+- **Separate git repositories:** High overhead for a coordinated ML demo project; monorepo with distinct subfolders provides the optimal balance.
+
+#### Impact on Project
+- **Positive:** Clear boundaries, zero dependency collision, independent deployment and testing.
+- **Negative / Risks:** Running locally requires launching two processes or using Docker Compose.
+- **Mitigation:** Added root orchestration scripts (`npm run backend:dev`, `npm run frontend:dev`, `docker-compose up`) and full instructions in `README.md`.
+

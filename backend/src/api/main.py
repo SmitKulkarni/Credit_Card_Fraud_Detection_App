@@ -145,12 +145,17 @@ def create_application() -> FastAPI:
     app.include_router(predict_router, prefix=settings.API_PREFIX)
     app.include_router(analytics_router, prefix=settings.API_PREFIX)
 
-    # Mount Interactive Analyst Dashboard
-    ui_path = Path("src/ui")
-    if ui_path.is_dir():
+    # Mount Interactive Analyst Dashboard (if available)
+    repo_root = Path(__file__).resolve().parent.parent.parent.parent
+    ui_candidate = repo_root / "frontend" / "src"
+    if not ui_candidate.is_dir():
+        ui_candidate = Path("../frontend/src")
+    if not ui_candidate.is_dir():
+        ui_candidate = Path("src/ui")
+    if ui_candidate.is_dir():
         from starlette.staticfiles import StaticFiles
-        app.mount("/dashboard", StaticFiles(directory=str(ui_path), html=True), name="dashboard")
-        logger.info("Mounted Analyst Dashboard at /dashboard")
+        app.mount("/dashboard", StaticFiles(directory=str(ui_candidate), html=True), name="dashboard")
+        logger.info("Mounted Analyst Dashboard at /dashboard from %s", ui_candidate)
 
     return app
 

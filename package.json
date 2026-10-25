@@ -1,0 +1,24 @@
+{
+  "name": "credit-card-fraud-detection-project",
+  "version": "0.5.0",
+  "private": true,
+  "description": "Credit Card Fraud Detection App with separated frontend and backend subfolders",
+  "scripts": {
+    "frontend:install": "npm --prefix frontend install",
+    "frontend:dev": "npm --prefix frontend run dev",
+    "frontend:build": "npm --prefix frontend run build",
+    "backend:install": "pip install -r backend/requirements.txt",
+    "backend:dev": "npm --prefix backend run dev",
+    "backend:test": "npm --prefix backend run test",
+    "backend:train": "npm --prefix backend run train",
+    "test": "npm --prefix backend run test"
+  },
+  "keywords": [
+    "fraud-detection",
+    "fastapi",
+    "xgboost",
+    "nextjs",
+    "fintech"
+  ],
+  "license": "MIT"
+}

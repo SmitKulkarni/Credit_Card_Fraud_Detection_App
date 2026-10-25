@@ -1,0 +1,32 @@
+{
+  "name": "credit-card-fraud-detection-frontend",
+  "version": "0.5.0",
+  "description": "Sentinel Triage Studio & Next.js frontend for credit card fraud detection",
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000",
+    "lint": "tsc --noEmit",
+    "serve": "npx serve src -p 3000"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.118.0",
+    "next": "^15.1.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "typescript": "^5.7.0"
+  },
+  "keywords": [
+    "fraud-detection",
+    "fintech-ui",
+    "nextjs",
+    "supabase"
+  ],
+  "author": "Sentinel Triage Team",
+  "license": "MIT"
+}

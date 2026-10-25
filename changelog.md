@@ -19,11 +19,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Root-level orchestration `package.json` providing coordinated scripts (`npm run backend:dev`, `npm run frontend:dev`, `npm run backend:test`).
+- Docker Compose dual-service configuration for frontend (port 3000) and backend (port 8000).
+- Independent `.env` and `.env.example` configurations for `frontend/` and `backend/`.
+
+### Changed
+- **Decoupled Architecture Refactoring (ADR-005):**
+  - Completely separated repository into standalone `frontend/` and `backend/` subfolders.
+  - Moved all frontend assets, styles, Sentinel Triage Studio, Next.js page components, Supabase helpers, and TypeScript config into `frontend/`.
+  - Moved all ML pipelines, models, SQLite databases, FastAPI server endpoints, and pytest suites into `backend/`.
+  - Separated `package.json` files and runtime dependencies between tiers.
+  - Updated API routing so frontend purely consumes backend through REST API calls at `http://127.0.0.1:8000/api/v1`.
+  - Updated GitHub Actions CI workflow to run independent test jobs for backend (Python 3.10/3.11 pytest) and frontend (TypeScript check).
+  - Updated master `README.md` with complete installation, startup, and dual-run instructions.
+
+### Added (Supabase Integration)
+- Integrated Supabase client helpers and SSR package (`@supabase/supabase-js`, `@supabase/ssr`).
+- Created `frontend/.env.local` and `frontend/.env` with Supabase connection credentials.
+- Created `frontend/src/page.tsx` with server component data fetching.
+- Created `frontend/src/utils/supabase/server.ts`, `client.ts`, and `middleware.ts`.
+- Installed Supabase agent skills (`supabase`, `supabase-postgres-best-practices`) in `.agents/skills/`.
+
 ### Planned for v0.6.0
 - [ ] Streaming real-time Kafka transaction consumer.
 - [ ] A/B model multi-version shadow evaluation.
 
 ---
+
 
 ## [0.5.0] - 2026-10-25
 

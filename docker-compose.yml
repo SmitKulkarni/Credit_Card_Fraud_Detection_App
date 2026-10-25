@@ -1,22 +1,23 @@
 version: '3.8'
 
 services:
-  fraud-detection-app:
+  backend:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
-    container_name: fraud_guard_service
+    container_name: fraud_guard_backend
     ports:
       - "8000:8000"
     volumes:
-      - ./data:/app/data
-      - ./models:/app/models
+      - ./backend/data:/app/data
+      - ./backend/models:/app/models
     environment:
       - ENVIRONMENT=production
       - PORT=8000
       - HOST=0.0.0.0
       - FRAUD_PROBABILITY_THRESHOLD=0.35
       - REVIEW_PROBABILITY_THRESHOLD=0.20
+      - DATABASE_URL=sqlite:///./data/fraud_audit.db
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
@@ -24,3 +25,19 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
+
+  frontend:
+    image: node:20-alpine
+    container_name: fraud_guard_frontend
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "3000:3000"
+    command: sh -c "npm install && npm run dev"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8000/api/v1
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped

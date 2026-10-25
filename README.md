@@ -1,136 +1,231 @@
 # 🛡️ Sentinel Triage Studio - Credit Card Fraud Detection
 
 > **Production-Grade FinTech Machine Learning Platform**  
-> Real-time inference engine, calibrated risk classification, Tree SHAP explainability, SQLite compliance audit trail, and interactive analyst workstation.
+> Decoupled architecture with independent FastAPI/XGBoost backend microservice and modern Next.js / Sentinel Triage Studio frontend client.
 
 [![CI Status](https://img.shields.io/badge/build-passing-brightgreen)](#)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.14-blue)](#)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.143.0-teal)](#)
+[![Next.js](https://img.shields.io/badge/Next.js-15.1.0-black)](#)
 [![XGBoost](https://img.shields.io/badge/XGBoost-PR--AUC%200.9803-orange)](#)
 [![Tests Passing](https://img.shields.io/badge/tests-28%2F28%20passing-success)](#)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue)](#)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
 
-## 🌟 Key Features
+## 📁 Project Architecture & Directory Layout
 
-1. **Extreme Imbalance Machine Learning Core (`src/ml/`):**
-   - Trained on tabular credit card transaction distributions with extreme class imbalance (~0.2% fraud).
-   - Cost-sensitive **XGBoost Classifier** with `scale_pos_weight = 499.0` and Stratified 5-Fold Cross-Validation.
-   - **Cross-Validation PR-AUC: 0.9803 (+/- 0.0245)**; Holdout Test PR-AUC: 1.0000.
-   - Robust scaling for transaction `Amount` to resist monetary outliers without test set leakage.
-   - Native **Tree SHAP (Shapley Additive exPlanations)** factor attribution running in $< 15\text{ms}$.
+The project is cleanly decoupled into two autonomous, self-contained sub-environments: `frontend/` and `backend/`.
 
-2. **High-Performance FastAPI Engine (`src/api/`):**
-   - Strictly typed request/response contracts using **Pydantic v2**.
-   - Asynchronous startup model caching via application lifespan.
-   - Parallel vectorized batch scoring supporting up to 1,000 transactions per request.
-   - 1-click test scenario presets (`/api/v1/predict/presets`).
-
-3. **Interactive Analyst Workstation (`src/ui/`):**
-   - Premium FinTech dark-mode theme (`#090d16` base, `#1e293b` glassmorphism).
-   - Animated circular SVG radial risk meter with dynamic color shifting:
-     - 🟢 **Legitimate** ($< 20\%$) $\rightarrow$ `APPROVE TRANSACTION`
-     - 🟡 **Suspicious** ($20\% - 35\%$) $\rightarrow$ `MANUAL REVIEW`
-     - 🔴 **High Risk** ($\ge 35\%$) $\rightarrow$ `BLOCK TRANSACTION (FRAUD)`
-   - Tree SHAP Waterfall impact visualization with human-readable triage factor descriptions.
-   - Drag-and-drop CSV batch processor with built-in sample template generator.
-
-4. **Production Hardening, Auditing & Drift Monitoring (`src/db/` & `src/ml/`):**
-   - SQLite persistent compliance audit database (`data/fraud_audit.db`) storing all scored transactions.
-   - **Population Stability Index (PSI)** calculation for real-time concept drift detection.
-   - Production multi-stage `Dockerfile` (unprivileged `appuser`) and `docker-compose.yml`.
-   - Complete GitHub Actions CI pipeline running automated tests.
-
----
-
-## 🏗️ System Architecture
-
-```mermaid
-flowchart TD
-    User([Cardholder / Payment Gateway]) -->|HTTP POST JSON| API[FastAPI Serving Engine]
-    Analyst([Fraud Analyst]) -->|Browser UI| Dashboard[Sentinel Triage Studio /dashboard]
-    Dashboard -->|REST Requests| API
-
-    subgraph Backend [Inference & Serving Layer]
-        API --> Lifespan[Application State Cache]
-        Lifespan --> Model[XGBoost Classifier .joblib]
-        Lifespan --> Scaler[RobustScaler Preprocessor .joblib]
-        Lifespan --> XAI[Tree SHAP Explainer]
-        Lifespan --> Drift[PSI Drift Detector]
-    end
-
-    subgraph Storage [Persistence & Registry]
-        API --> DB[(SQLite Audit Trail /data)]
-        Model --> Registry[models/model_metrics.json]
-    end
+```text
+Credit_Card_Fraud_Detection_App/
+├── frontend/                     # Modern Frontend Client & UI Layer
+│   ├── src/                      # Source code (Sentinel Studio, CSS, JS, TypeScript)
+│   │   ├── css/                  # FinTech dark-mode design system & animations
+│   │   ├── js/                   # Pure API client, chart renders, presets
+│   │   ├── utils/supabase/       # Supabase SSR client, server & middleware helpers
+│   │   ├── index.html            # Sentinel Triage Studio analyst workstation
+│   │   └── page.tsx              # Next.js Server Component page
+│   ├── public/                   # Public static assets & mirrors
+│   ├── .env                      # Frontend environment variables (API URL, Supabase)
+│   ├── .env.example              # Frontend environment template
+│   ├── package.json              # Frontend npm dependencies & run scripts
+│   └── tsconfig.json             # TypeScript configuration
+│
+├── backend/                      # Production FastAPI & XGBoost Inference Engine
+│   ├── src/                      # Backend microservice source code
+│   │   ├── api/                  # FastAPI routers, schemas, configs, lifespan
+│   │   │   ├── routes/           # /health, /predict, /analytics endpoints
+│   │   │   ├── schemas/          # Pydantic v2 validation contracts
+│   │   │   ├── config.py         # Dynamic environment settings
+│   │   │   └── main.py           # Application entrypoint & CORS middleware
+│   │   ├── db/                   # SQLite audit trail & SQLAlchemy models
+│   │   └── ml/                   # ML pipeline (XGBoost, Tree SHAP, PSI drift)
+│   ├── data/                     # Raw datasets & persistent SQLite database
+│   ├── models/                   # Serialized model (.joblib) & metrics metadata
+│   ├── tests/                    # 28-test automated pytest verification suite
+│   ├── .env                      # Backend environment variables (Ports, Thresholds)
+│   ├── .env.example              # Backend environment template
+│   ├── Dockerfile                # Production multi-stage backend container
+│   ├── package.json              # Backend npm task runner scripts
+│   └── requirements.txt          # Python runtime dependencies
+│
+├── .github/workflows/ci.yml      # CI pipeline testing backend & frontend
+├── docker-compose.yml            # Multi-service composition (frontend + backend)
+├── package.json                  # Root convenience orchestration scripts
+├── README.md                     # Master project documentation
+├── .gitignore                    # Version control exclusion rules
+├── decisions.md                  # Persistent Architecture Decision Records (ADRs)
+├── rules.md                      # AI coding & architectural rules
+├── memory.md                     # Long-term persistent project memory
+├── phases.md                     # Roadmap & phase tracking
+└── changelog.md                  # Chronological change history
 ```
 
 ---
 
-## 🚀 Quickstart Guide
+## ⚡ Quickstart Guide
 
-### 1. Prerequisites
-- Python 3.10, 3.11, or 3.14+
-- Git
+You can run the frontend and backend independently or orchestrate them together.
 
-### 2. Installation
-```bash
-# Clone the repository
-git clone https://github.com/SmitKulkarni/Credit_Card_Fraud_Detection_App.git
-cd Credit_Card_Fraud_Detection_App
+### Option 1: Run Both Together (Recommended)
 
-# Install dependencies
-pip install -r requirements.txt
-```
-
-### 3. Model Training (Optional - Baseline Pre-trained)
-The repository includes pre-trained model artifacts in `models/`. To retrain:
-```bash
-python -m src.ml.train --synthetic-samples 25000 --n-estimators 150
-```
-
-### 4. Run the Application
-```bash
-python -m uvicorn src.api.main:app --host 127.0.0.1 --port 8000 --reload
-```
-
-Open your browser to:
-- **Analyst Workstation**: [http://127.0.0.1:8000/dashboard](http://127.0.0.1:8000/dashboard)
-- **Interactive Swagger Docs**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-- **API Health Check**: [http://127.0.0.1:8000/api/v1/health](http://127.0.0.1:8000/api/v1/health)
-
----
-
-## 🧪 Running Automated Tests
-
-Run the complete 28-test verification suite:
-```bash
-pytest tests/ -v
-```
-
----
-
-## 🐳 Docker Deployment
-
-Run with Docker Compose:
+#### Using Docker Compose:
 ```bash
 docker-compose up --build
 ```
-The service will be accessible on port 8000 with volume mounts persisting database records in `./data/`.
+- **Frontend**: [http://localhost:3000](http://localhost:3000)
+- **Backend API**: [http://localhost:8000/api/v1](http://localhost:8000/api/v1)
+- **Interactive Swagger Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Embedded Analyst Dashboard**: [http://localhost:8000/dashboard](http://localhost:8000/dashboard)
+
+#### Using Root NPM Scripts (Concurrent / Convenient):
+From the project root:
+```bash
+# 1. Install all dependencies
+npm run backend:install
+npm run frontend:install
+
+# 2. Run backend in one terminal
+npm run backend:dev
+
+# 3. Run frontend in another terminal
+npm run frontend:dev
+```
+
+---
+
+### Option 2: Running Backend Independently
+
+#### 1. Navigate to Backend Directory
+```bash
+cd backend
+```
+
+#### 2. Install Backend Dependencies
+Ensure Python 3.10+ is installed:
+```bash
+pip install -r requirements.txt
+```
+
+#### 3. Configure Backend Environment
+Copy the example environment file:
+```bash
+cp .env.example .env
+```
+Key configuration parameters in `backend/.env`:
+- `PORT=8000`
+- `DECISION_THRESHOLD_SUSPICIOUS=0.20`
+- `DECISION_THRESHOLD_FRAUD=0.35`
+- `DATABASE_URL=sqlite:///./data/fraud_audit.db`
+
+#### 4. Model Training (Optional - Baseline Artifacts Pre-packaged)
+```bash
+# Via Python module:
+python -m src.ml.train --synthetic-samples 25000 --n-estimators 150
+
+# Or via npm script:
+npm run train
+```
+
+#### 5. Start Backend Server
+```bash
+# Via uvicorn:
+python -m uvicorn src.api.main:app --host 127.0.0.1 --port 8000 --reload
+
+# Or via npm script:
+npm run dev
+```
+
+#### 6. Run Backend Tests
+Execute the comprehensive 28-test verification suite:
+```bash
+python -m pytest tests/ -v
+# Or:
+npm test
+```
+
+Backend URLs:
+- **API Health Check**: [http://127.0.0.1:8000/api/v1/health](http://127.0.0.1:8000/api/v1/health)
+- **Swagger Documentation**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+- **OpenAPI JSON Spec**: [http://127.0.0.1:8000/openapi.json](http://127.0.0.1:8000/openapi.json)
+
+---
+
+### Option 3: Running Frontend Independently
+
+#### 1. Navigate to Frontend Directory
+```bash
+cd frontend
+```
+
+#### 2. Install Frontend Dependencies
+Ensure Node.js 18+ is installed:
+```bash
+npm install
+```
+
+#### 3. Configure Frontend Environment
+Copy the example environment file:
+```bash
+cp .env.example .env
+```
+Key configuration parameters in `frontend/.env`:
+- `NEXT_PUBLIC_API_URL=http://127.0.0.1:8000/api/v1`
+- `NEXT_PUBLIC_SUPABASE_URL=https://eufrawprayanwthhuvaj.supabase.co`
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_3YczReP6yNU8WPGQuS8V9A_CFJaeYA1`
+
+#### 4. Start Frontend Client
+```bash
+# Start Next.js Development Server (Port 3000):
+npm run dev
+
+# Or serve static Sentinel Triage Studio directly:
+npm run serve
+```
+
+#### 5. Verify Frontend Types & Code
+```bash
+npm run lint
+```
+
+Frontend URLs:
+- **Next.js Application**: [http://localhost:3000](http://localhost:3000)
+- **Sentinel Triage Studio (Static)**: [http://localhost:3000/src/index.html](http://localhost:3000/src/index.html)
+
+---
+
+## 🔌 Frontend-to-Backend API Communication
+
+The frontend client communicates purely via HTTP REST API calls:
+- All prediction requests are dispatched to `POST /api/v1/predict/` with `V1`–`V28` PCA vectors and `Amount`.
+- Batch transactions are submitted as arrays to `POST /api/v1/predict/batch`.
+- Health and model metrics are queried via `GET /api/v1/health` and `GET /api/v1/analytics/stats`.
+- Pre-configured fraud/legitimate presets are fetched from `GET /api/v1/predict/presets`.
+- Full CORS middleware is enabled on the backend to permit requests from `http://localhost:3000` and all local origin variants.
+
+---
+
+## 🧪 CI/CD Pipeline
+
+The GitHub Actions workflow (`.github/workflows/ci.yml`) automatically isolates and tests both tiers independently on every push:
+1. **`backend-test` Job**: Sets up Python 3.10 & 3.11, installs `backend/requirements.txt`, and runs `pytest tests/` inside `backend/`.
+2. **`frontend-test` Job**: Sets up Node.js 20, installs `frontend/package.json`, and runs TypeScript type checking (`tsc --noEmit`).
 
 ---
 
 ## 📖 Persistent AI Context Framework
 
-This repository uses a 5-document persistent context system for continuous AI alignment:
-- [`decisions.md`](./decisions.md) - Architecture Decision Records (ADRs).
+This repository uses a persistent context system for continuous AI alignment:
+- [`decisions.md`](./decisions.md) - Architecture Decision Records (including ADR-005: Decoupled Structure).
 - [`rules.md`](./rules.md) - Mandatory coding, security, and git standards.
 - [`memory.md`](./memory.md) - Living knowledge base, active schemas, and roadmap.
-- [`phases.md`](./phases.md) - 4-phase master implementation tracking.
+- [`phases.md`](./phases.md) - Implementation milestones and tracking.
 - [`changelog.md`](./changelog.md) - Keep-a-Changelog SemVer change history.
 
 ---
 
 ## 📄 License
 This project is licensed under the MIT License.
+
