@@ -201,11 +201,11 @@ async def get_preset_scenarios() -> List[PresetScenario]:
     return [
         PresetScenario(
             presetId="legitimate_grocery",
-            title="Normal Grocery Purchase",
+            title="Standard Retail Purchase",
             riskCategory="LOW",
             description="Routine low-value retail purchase with standard cardholder behavioral patterns.",
             payload=TransactionInput(
-                transactionId="tx_demo_legit_01",
+                transactionId="TX-892104",
                 amount=24.50,
                 time=450.0,
                 features={f"V{i}": 0.05 for i in range(1, 29)},
@@ -217,7 +217,7 @@ async def get_preset_scenarios() -> List[PresetScenario]:
             riskCategory="MEDIUM",
             description="Elevated transaction amount with moderate divergence in device and velocity features.",
             payload=TransactionInput(
-                transactionId="tx_demo_review_02",
+                transactionId="TX-492105",
                 amount=680.00,
                 time=1200.0,
                 features={
@@ -235,7 +235,7 @@ async def get_preset_scenarios() -> List[PresetScenario]:
             riskCategory="HIGH",
             description="Severe anomaly on critical fraud indicators (V14, V12, V17) with high monetary value.",
             payload=TransactionInput(
-                transactionId="tx_demo_fraud_03",
+                transactionId="TX-792106",
                 amount=1489.00,
                 time=800.0,
                 features={

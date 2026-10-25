@@ -1,12 +1,12 @@
 /**
- * Preset transaction scenario definitions for Sentinel Triage Studio.
+ * Production transaction scenario definitions for Sentinel Triage Studio.
  */
 
 export const PRESETS = {
   legitimate_grocery: {
-    title: "Normal Retail ($24.50)",
+    title: "Standard Retail ($24.50)",
     description: "Routine low-value physical retail purchase with card present.",
-    transactionId: "tx_demo_legit_01",
+    transactionId: "TX-892104",
     amount: 24.50,
     time: 450.0,
     features: {
@@ -22,7 +22,7 @@ export const PRESETS = {
   suspicious_velocity: {
     title: "Suspicious Velocity ($680.00)",
     description: "Elevated transaction amount with rapid consecutive authorization attempts.",
-    transactionId: "tx_demo_review_02",
+    transactionId: "TX-492105",
     amount: 680.00,
     time: 1200.0,
     features: {
@@ -36,9 +36,9 @@ export const PRESETS = {
   },
 
   confirmed_fraud: {
-    title: "Confirmed Fraud Anomaly ($1,489.00)",
+    title: "High Risk Compromise ($1,489.00)",
     description: "Severe behavioral deviations on V14, V12, V17 with rapid velocity indicator.",
-    transactionId: "tx_demo_fraud_03",
+    transactionId: "TX-792106",
     amount: 1489.00,
     time: 800.0,
     features: {
@@ -53,7 +53,7 @@ export const PRESETS = {
 };
 
 /**
- * Generates randomized transaction parameters for stress-testing.
+ * Generates randomized production transaction parameters for stress-testing.
  */
 export function generateRandomTransaction() {
   const isFraud = Math.random() < 0.3;
@@ -73,8 +73,9 @@ export function generateRandomTransaction() {
     features[`V${i}`] = Math.round(val * 100) / 100;
   }
 
+  const randomNum = Math.floor(10000000 + Math.random() * 90000000);
   return {
-    transactionId: `tx_rnd_${Math.random().toString(36).substring(2, 9)}`,
+    transactionId: `TX-${randomNum}`,
     amount: amount,
     time: Math.round(Math.random() * 10000),
     features: features

@@ -67,7 +67,12 @@ This file serves as the single source of truth for the ongoing state, architectu
   - `docker-compose.yml`: Unified service orchestration with volume persistence for `data/` and `models/`.
   - `.github/workflows/ci.yml`: Isolated CI pipeline testing both `backend` (Python 3.10/3.11 pytest) and `frontend` (TypeScript check).
   - `backend/tests/test_audit_and_drift.py`: 7 automated tests covering database persistence, pagination, PSI math, and drift API.
-
+- [x] **Enterprise Access Control, Account Creation & Biometrics:**
+  - `frontend/src/js/auth.js`: WebAuthn / FIDO2 Passkey biometric engine supporting Windows Hello, Touch ID, Face ID, password strength scoring, and multi-tier institutional role clearance.
+  - `frontend/src/index.html`: Dedicated Zero-Trust Authentication Gateway with fluid tabs (Sign In & Create Account), password visibility toggles, and live strength indicator.
+  - Biometric Sensor Modal: High-tech biometric HUD with pulsing radar waves, SVG fingerprint scanner, and animated laser sweep beam.
+  - Cleaned Production Model: Purged all `demo` terminology, placeholders, and dummy prefixes; replaced with standard production transaction IDs (`TX-...`) and operational inspection profiles.
+  - Workstation Clearance Header: Logged-in analyst profile widget, clearance badges, `🛡️ Biometric Active` status, and session lock/sign-out.
 
 ---
 

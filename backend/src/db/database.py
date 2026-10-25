@@ -94,6 +94,20 @@ def save_audit_record(
         session.add(record)
         session.commit()
         session.refresh(record)
+
+        # Asynchronously sync to Supabase Cloud if configured
+        sync_record_to_supabase_async(
+            transaction_id=transaction_id,
+            amount=amount,
+            time_delta=time_delta,
+            fraud_probability=fraud_probability,
+            is_fraud=is_fraud,
+            risk_level=risk_level,
+            decision=decision,
+            latency_ms=latency_ms,
+            top_factors=top_factors,
+        )
+
         return record
     except Exception as exc:
         session.rollback()
@@ -102,3 +116,94 @@ def save_audit_record(
     finally:
         if should_close:
             session.close()
+
+
+def sync_record_to_supabase_async(
+    transaction_id: str,
+    amount: float,
+    time_delta: float,
+    fraud_probability: float,
+    is_fraud: bool,
+    risk_level: str,
+    decision: str,
+    latency_ms: float,
+    top_factors: Optional[list] = None,
+    user_email: Optional[str] = None,
+) -> None:
+    """Dispatches a non-blocking background thread to sync audit log into Supabase."""
+    import threading
+
+    def _worker():
+        try:
+            settings = get_settings()
+            if not getattr(settings, "SUPABASE_SYNC_ENABLED", False):
+                return
+
+            supabase_url = getattr(settings, "SUPABASE_URL", None)
+            supabase_key = getattr(settings, "SUPABASE_KEY", None)
+            if not supabase_url or not supabase_key:
+                return
+
+            import urllib.request
+
+            endpoint = f"{supabase_url.rstrip('/')}/rest/v1/fraud_audit_records"
+            payload = json.dumps({
+                "transaction_id": transaction_id,
+                "amount": round(amount, 2),
+                "time_delta": round(time_delta, 2),
+                "fraud_probability": round(fraud_probability, 4),
+                "is_fraud": is_fraud,
+                "risk_level": risk_level,
+                "decision": decision,
+                "latency_ms": round(latency_ms, 2),
+                "top_factors": top_factors or [],
+                "user_email": user_email or "analyst@sentinel.corp",
+            }).encode("utf-8")
+
+            req = urllib.request.Request(
+                endpoint,
+                data=payload,
+                headers={
+                    "apikey": supabase_key,
+                    "Authorization": f"Bearer {supabase_key}",
+                    "Content-Type": "application/json",
+                    "Prefer": "return=minimal",
+                },
+                method="POST",
+            )
+            with urllib.request.urlopen(req, timeout=3.0) as resp:
+                if resp.status in (200, 201, 204):
+                    logger.debug("Successfully synced %s to Supabase Cloud.", transaction_id)
+        except Exception as exc:
+            logger.warning("Supabase background sync skipped for %s: %s", transaction_id, exc)
+
+    thread = threading.Thread(target=_worker, daemon=True)
+    thread.start()
+
+
+def fetch_supabase_audit_records(limit: int = 25) -> list:
+    """Fetches the latest audit records from Supabase REST Data API."""
+    try:
+        settings = get_settings()
+        supabase_url = getattr(settings, "SUPABASE_URL", None)
+        supabase_key = getattr(settings, "SUPABASE_KEY", None)
+        if not supabase_url or not supabase_key:
+            return []
+
+        import urllib.request
+        endpoint = f"{supabase_url.rstrip('/')}/rest/v1/fraud_audit_records?order=created_at.desc&limit={limit}&select=*"
+        req = urllib.request.Request(
+            endpoint,
+            headers={
+                "apikey": supabase_key,
+                "Authorization": f"Bearer {supabase_key}",
+            },
+            method="GET",
+        )
+        with urllib.request.urlopen(req, timeout=3.5) as resp:
+            data = resp.read().decode("utf-8")
+            return json.loads(data)
+    except Exception as exc:
+        logger.warning("Could not fetch records from Supabase: %s", exc)
+        return []
+

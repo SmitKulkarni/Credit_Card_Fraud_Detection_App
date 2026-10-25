@@ -91,6 +91,18 @@ async def get_audit_history(
     }
 
 
+@router.get("/analytics/supabase-history", summary="Query Cloud Audit Trail from Supabase")
+async def get_supabase_audit_history(limit: int = Query(default=25, ge=1, le=100)):
+    """Fetches real-time transaction audit records stored in Supabase Postgres."""
+    from src.db.database import fetch_supabase_audit_records
+    records = fetch_supabase_audit_records(limit=limit)
+    return {
+        "source": "supabase_postgres",
+        "count": len(records),
+        "records": records,
+    }
+
+
 @router.post("/analytics/drift-check", summary="Evaluate Data Drift (PSI)")
 async def check_data_drift(
     payload: BatchTransactionRequest,

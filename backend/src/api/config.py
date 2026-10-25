@@ -44,6 +44,11 @@ class Settings(BaseSettings):
     FRAUD_PROBABILITY_THRESHOLD: float = 0.35
     REVIEW_PROBABILITY_THRESHOLD: float = 0.20
 
+    # Supabase Cloud Integration
+    SUPABASE_URL: str = "https://eufrawprayanwthhuvaj.supabase.co"
+    SUPABASE_KEY: str = "sb_publishable_3YczReP6yNU8WPGQuS8V9A_CFJaeYA1"
+    SUPABASE_SYNC_ENABLED: bool = True
+
     @property
     def model_path(self) -> Path:
         """Returns resolved Path to the trained model artifact."""

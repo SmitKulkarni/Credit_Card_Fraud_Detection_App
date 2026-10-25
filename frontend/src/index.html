@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sentinel Triage Studio - Credit Card Fraud Detection</title>
-  <meta name="description" content="Real-time FinTech fraud detection studio powered by XGBoost, calibrated probability thresholds, and Tree SHAP explainability.">
+  <title>Sentinel Enterprise - Real-Time Fraud Prevention & Risk Intelligence</title>
+  <meta name="description" content="Institutional credit card fraud triage workstation powered by XGBoost, calibrated probability thresholds, and Tree SHAP explainability.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -12,237 +12,474 @@
 </head>
 <body>
 
-  <!-- Navigation Header -->
-  <header class="header">
-    <div class="brand">
-      <div class="brand__icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-          <path d="M9 12l2 2 4-4"/>
-        </svg>
-      </div>
-      <div>
-        <h1 class="brand__title" style="display: inline; font-size: 1.15rem;">Sentinel Triage Studio</h1>
-        <span class="brand__badge">AIDS FinTech</span>
-      </div>
-    </div>
+  <!-- =========================================================================
+       1. Authentication & Enterprise Access Gateway
+       ========================================================================= -->
+  <section id="auth-wrapper" class="auth-wrapper">
+    <div class="auth-ambient-glow"></div>
 
-    <div class="header__meta">
-      <div id="header-status-pill" class="status-pill">
-        <span class="status-dot"></span> Checking API...
-      </div>
-      <a href="/docs" target="_blank" class="nav-link" title="OpenAPI Swagger Documentation">API Docs ↗</a>
-      <a href="/api/v1/model/metadata" target="_blank" class="nav-link" title="Active Model Benchmark Metrics">Model Registry ↗</a>
-    </div>
-  </header>
-
-  <main class="container">
-
-    <!-- KPI Ribbon -->
-    <section class="kpi-grid" aria-label="Session Metrics">
-      <div class="kpi-card">
-        <div class="kpi-header">
-          <span>Transactions Evaluated</span>
-          <span>⚡</span>
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-brand-emblem">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M9 12l2 2 4-4"/>
+          </svg>
         </div>
-        <div id="kpi-total-scored" class="kpi-value">0</div>
-        <div class="kpi-subtext">Total requests processed this session</div>
+        <h1 class="auth-title">Sentinel Enterprise Access</h1>
+        <p class="auth-subtitle">Zero-Trust Fraud Detection & Risk Intelligence Workstation</p>
       </div>
 
-      <div class="kpi-card">
-        <div class="kpi-header">
-          <span>Fraud Block Rate</span>
-          <span style="color: var(--color-fraud);">▲</span>
-        </div>
-        <div id="kpi-fraud-rate" class="kpi-value" style="color: var(--color-fraud);">0.0%</div>
-        <div class="kpi-subtext">High risk (Threshold &ge; 35%)</div>
-      </div>
-
-      <div class="kpi-card">
-        <div class="kpi-header">
-          <span>Manual Review Rate</span>
-          <span style="color: var(--color-review);">●</span>
-        </div>
-        <div id="kpi-review-rate" class="kpi-value" style="color: var(--color-review);">0.0%</div>
-        <div class="kpi-subtext">Medium risk (20% - 35% triage)</div>
-      </div>
-
-      <div class="kpi-card">
-        <div class="kpi-header">
-          <span>Average Latency</span>
-          <span style="color: var(--color-legit);">⏱</span>
-        </div>
-        <div id="kpi-avg-latency" class="kpi-value" style="color: var(--color-cyan);">0.0 ms</div>
-        <div class="kpi-subtext">End-to-end inference turnaround</div>
-      </div>
-    </section>
-
-    <!-- View Mode Switcher -->
-    <nav class="view-switcher" aria-label="Workstation Views">
-      <button id="tab-single" class="view-btn active" type="button">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        Single Transaction Triage
-      </button>
-      <button id="tab-batch" class="view-btn" type="button">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        Batch CSV Processor
-      </button>
-    </nav>
-
-    <!-- View 1: Single Transaction Triage -->
-    <section id="view-single-panel" class="workspace-grid">
-      
-      <!-- Left Column: Input Form & Scenarios -->
-      <article class="glass-panel">
-        <div class="panel-header">
-          <h2 class="panel-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-            Transaction Parameters
-          </h2>
-          <button id="btn-reset" class="nav-link" type="button" style="border: 1px solid var(--border-subtle);">Reset</button>
-        </div>
-
-        <!-- Preset Scenarios -->
-        <div class="presets-section">
-          <div class="presets-label">Inject Verification Scenarios:</div>
-          <div class="preset-buttons">
-            <button id="btn-preset-legit" class="preset-btn preset-btn--legit" type="button" title="Load Normal Retail Sample">
-              <span>🟢</span> Normal Retail ($24.50)
-            </button>
-            <button id="btn-preset-review" class="preset-btn preset-btn--review" type="button" title="Load Suspicious Velocity Sample">
-              <span>🟡</span> Suspicious ($680.00)
-            </button>
-            <button id="btn-preset-fraud" class="preset-btn preset-btn--fraud" type="button" title="Load Confirmed Fraud Sample">
-              <span>🔴</span> Fraud ($1,489.00)
-            </button>
-            <button id="btn-preset-random" class="preset-btn" type="button" title="Synthesize New Random Transaction">
-              <span>🎲</span> Randomize
-            </button>
-          </div>
-        </div>
-
-        <form id="transaction-form">
-          <div class="form-grid">
-            <div class="form-group form-group--full">
-              <label class="form-label" for="input-tx-id">Transaction Identifier</label>
-              <input type="text" id="input-tx-id" class="form-input" required placeholder="tx_demo_01">
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="input-amount">Monetary Amount ($ USD)</label>
-              <input type="number" step="0.01" min="0" id="input-amount" class="form-input" required placeholder="149.50">
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="input-time">Elapsed Time (Seconds)</label>
-              <input type="number" step="any" min="0" id="input-time" class="form-input" required placeholder="450.0">
-            </div>
-          </div>
-
-          <!-- Collapsible PCA Matrix -->
-          <div class="features-accordion">
-            <div id="accordion-toggle" class="accordion-header">
-              <span>PCA Behavioral Features ($V_1$ to $V_{28}$)</span>
-              <span id="accordion-arrow">▼</span>
-            </div>
-            <div id="accordion-body" class="accordion-body" style="display: none;">
-              <div id="pca-fields-container" style="display: contents;"></div>
-            </div>
-          </div>
-
-          <button id="btn-submit" type="submit" class="btn-primary">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            Analyze Risk with AI
-          </button>
-        </form>
-      </article>
-
-      <!-- Right Column: Risk Evaluation & Explainability -->
-      <article class="glass-panel">
-        <div class="panel-header">
-          <h2 class="panel-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-            Risk Assessment & Decision
-          </h2>
-          <div class="meta-stats-row">
-            <span id="eval-latency">0.0 ms</span>
-            <span id="eval-threshold">Cutoff: 35.0%</span>
-          </div>
-        </div>
-
-        <!-- SVG Circular Radial Meter -->
-        <div class="risk-hero">
-          <div class="gauge-wrapper">
-            <svg class="gauge-svg" viewBox="0 0 200 200">
-              <circle class="gauge-bg" cx="100" cy="100" r="90"></circle>
-              <circle id="gauge-bar" class="gauge-bar" cx="100" cy="100" r="90"></circle>
-            </svg>
-            <div class="gauge-center-text">
-              <span id="gauge-percent" class="gauge-percent">0.00%</span>
-              <span class="gauge-sublabel">Fraud Probability</span>
-            </div>
-          </div>
-
-          <!-- Dynamic Actionable Decision Badge -->
-          <div id="decision-badge" class="decision-badge decision-badge--legit">
-            <span id="decision-text">APPROVE TRANSACTION</span>
-          </div>
-        </div>
-
-        <!-- Tree SHAP Waterfall Panel -->
-        <div class="explain-panel">
-          <div class="panel-title" style="font-size: 0.95rem; margin-bottom: 0.5rem;">
-            <span>Tree SHAP Forensic Breakdown</span>
-          </div>
-          <div id="factors-container">
-            <div style="padding: 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
-              Run transaction analysis to view per-feature Shapley impact values.
-            </div>
-          </div>
-        </div>
-      </article>
-
-    </section>
-
-    <!-- View 2: Batch CSV Processor (Toggled) -->
-    <section id="view-batch-panel" class="glass-panel" style="display: none;">
-      <div class="panel-header">
-        <h2 class="panel-title">Batch Transaction Upload & Vectorized Evaluation</h2>
-        <button id="btn-download-sample-csv" class="nav-link" type="button" style="border: 1px solid var(--border-subtle);">
-          📥 Download Demo Batch CSV
+      <!-- Mode Switcher Tabs -->
+      <div class="auth-tabs" role="tablist">
+        <button id="tab-auth-signin" class="auth-tab-btn active" type="button" role="tab" aria-selected="true">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          Sign In
+        </button>
+        <button id="tab-auth-signup" class="auth-tab-btn" type="button" role="tab" aria-selected="false">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+          Create Account
         </button>
       </div>
 
-      <div id="csv-dropzone" class="dropzone">
-        <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-          <polyline points="17 8 12 3 7 8"/>
-          <line x1="12" y1="3" x2="12" y2="15"/>
+      <!-- Sign In Form -->
+      <form id="form-signin" class="auth-form">
+        <div class="form-group form-group--full">
+          <label class="form-label" for="signin-email">Corporate Work Email</label>
+          <input type="email" id="signin-email" class="form-input" required placeholder="analyst@sentinel.corp" autocomplete="username">
+        </div>
+
+        <div class="form-group form-group--full">
+          <label class="form-label" for="signin-password">Security Passcode</label>
+          <div class="password-input-wrapper">
+            <input type="password" id="signin-password" class="form-input" required placeholder="••••••••••••" autocomplete="current-password">
+            <button type="button" id="toggle-signin-password" class="password-toggle-btn" title="Toggle password visibility">
+              👁️
+            </button>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem;">
+          <label style="display: flex; align-items: center; gap: 0.4rem; color: var(--text-secondary); cursor: pointer;">
+            <input type="checkbox" id="signin-remember" checked> Remember Workstation
+          </label>
+          <span style="color: #38bdf8; cursor: pointer;" title="Self-service key recovery">Reset Security Key</span>
+        </div>
+
+        <button type="submit" id="btn-signin-submit" class="btn-primary" style="margin-top: 0.5rem;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Sign In to Workstation
+        </button>
+
+        <div class="auth-divider">Or Hardware Biometrics</div>
+
+        <!-- Biometric Authentication CTA -->
+        <button type="button" id="btn-biometric-signin" class="btn-biometric">
+          <svg class="biometric-icon-pulse" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a7 7 0 0 0-7 7v1"/>
+            <path d="M19 10V9a7 7 0 0 0-7-7"/>
+            <path d="M12 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
+            <path d="M12 14v4"/>
+            <path d="M4.93 19.07A10 10 0 0 1 2 12"/>
+            <path d="M22 12a10 10 0 0 1-2.93 7.07"/>
+            <path d="M16 16.5a5 5 0 0 1-8 0"/>
+          </svg>
+          Authenticate with Biometrics (Passkey / Windows Hello)
+        </button>
+
+        <!-- Institutional Quick-Fill Access Pill -->
+        <div class="auth-hint-card">
+          <span>Enterprise Credential: <strong>analyst@sentinel.corp</strong></span>
+          <button type="button" id="btn-autofill-analyst" class="auth-hint-btn">Autofill</button>
+        </div>
+      </form>
+
+      <!-- Create Account Form (Hidden by default) -->
+      <form id="form-signup" class="auth-form" style="display: none;">
+        <div class="form-group form-group--full">
+          <label class="form-label" for="signup-name">Full Institutional Name</label>
+          <input type="text" id="signup-name" class="form-input" required placeholder="Smit Kulkarni">
+        </div>
+
+        <div class="form-group form-group--full">
+          <label class="form-label" for="signup-email">Work Email</label>
+          <input type="email" id="signup-email" class="form-input" required placeholder="smit.kulkarni@sentinel.corp">
+        </div>
+
+        <div class="form-group form-group--full">
+          <label class="form-label" for="signup-role">Security Clearance Role</label>
+          <select id="signup-role" class="form-input" style="background: #0f172a; color: var(--text-primary); cursor: pointer;">
+            <option value="Senior Risk Investigator">Level 3 · Senior Risk Investigator</option>
+            <option value="Fraud Operations Lead">Level 2 · Fraud Operations Lead</option>
+            <option value="AML & Financial Crime Analyst">Level 2 · AML Compliance Analyst</option>
+            <option value="Chief Risk Officer">Level 4 · Chief Risk Officer (CRO)</option>
+          </select>
+        </div>
+
+        <div class="form-group form-group--full">
+          <label class="form-label" for="signup-password">Master Passcode</label>
+          <div class="password-input-wrapper">
+            <input type="password" id="signup-password" class="form-input" required placeholder="••••••••••••" minlength="6">
+            <button type="button" id="toggle-signup-password" class="password-toggle-btn" title="Toggle password visibility">
+              👁️
+            </button>
+          </div>
+          <!-- Dynamic Password Strength Bar -->
+          <div class="password-strength-container">
+            <div class="password-strength-bar">
+              <div id="password-strength-indicator" class="password-strength-indicator"></div>
+            </div>
+            <span id="password-strength-label" class="password-strength-label">Security strength: None</span>
+          </div>
+        </div>
+
+        <div class="form-group form-group--full">
+          <label class="form-label" for="signup-confirm-password">Confirm Passcode</label>
+          <input type="password" id="signup-confirm-password" class="form-input" required placeholder="••••••••••••" minlength="6">
+        </div>
+
+        <label style="display: flex; align-items: flex-start; gap: 0.6rem; font-size: 0.75rem; color: #a5b4fc; cursor: pointer; line-height: 1.4;">
+          <input type="checkbox" id="signup-biometrics-opt" checked style="margin-top: 2px;">
+          <span>Enroll hardware biometric passkey (Windows Hello / Touch ID / FIDO2) during registration.</span>
+        </label>
+
+        <button type="submit" id="btn-signup-submit" class="btn-primary" style="margin-top: 0.5rem;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>
+          Register Enterprise Account
+        </button>
+      </form>
+
+      <!-- Trust Ribbon -->
+      <div class="auth-trust-ribbon">
+        <div class="trust-badge-item"><span>🔒</span> FIDO2 Passkeys</div>
+        <div class="trust-badge-item"><span>🛡️</span> AES-256 Bit</div>
+        <div class="trust-badge-item"><span>⚡</span> Tree SHAP XAI</div>
+        <div class="trust-badge-item"><span>📜</span> SOC2 Certified</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       2. Hardware Biometric Authentication Modal
+       ========================================================================= -->
+  <div id="biometric-modal" class="modal-overlay" style="display: none;">
+    <div class="biometric-modal-card">
+      <div class="biometric-scanner-viewport">
+        <!-- Concentric pulsing radar waves -->
+        <div class="biometric-radar-ring"></div>
+        <!-- Moving Laser Scan Line -->
+        <div class="scanner-laser-beam"></div>
+
+        <!-- High-tech Fingerprint SVG Graphics -->
+        <svg class="biometric-icon-pulse" width="68" height="68" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2a7 7 0 0 0-7 7v1"/>
+          <path d="M19 10V9a7 7 0 0 0-7-7"/>
+          <path d="M12 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
+          <path d="M12 14v4"/>
+          <path d="M4.93 19.07A10 10 0 0 1 2 12"/>
+          <path d="M22 12a10 10 0 0 1-2.93 7.07"/>
+          <path d="M16 16.5a5 5 0 0 1-8 0"/>
+          <path d="M8.5 12a3.5 3.5 0 0 1 7 0"/>
         </svg>
-        <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.35rem;">Drag & drop transaction CSV here</h3>
-        <p style="font-size: 0.85rem; color: var(--text-muted);">or click to browse local files (Supports up to 500 items per batch)</p>
-        <input type="file" id="csv-file-input" accept=".csv" style="display: none;">
       </div>
 
-      <div id="batch-progress" style="display: none; text-align: center; padding: 1.5rem; font-weight: 600; color: var(--color-accent);">
-        ⚡ Vectorizing and scoring batch transactions across XGBoost model...
+      <h3 style="font-size: 1.15rem; font-weight: 700; color: #ffffff; margin-bottom: 0.35rem;">
+        Biometric Sensor Verification
+      </h3>
+      <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4;">
+        Place fingerprint on reader, glance at camera, or touch security passkey.
+      </p>
+
+      <!-- Dynamic Status Log Terminal -->
+      <div id="biometric-status-log" class="biometric-log">
+        Initializing FIDO2 WebAuthn handshake...
       </div>
 
-      <!-- Batch Results Table -->
-      <div id="batch-results-card" style="display: none; margin-top: 1.5rem;">
-        <div style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
-          <div class="status-pill" style="border-color: var(--border-subtle); color: var(--text-primary);">
-            Total: <strong id="batch-stat-total" style="margin-left: 4px;">0</strong>
+      <!-- Action buttons -->
+      <div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: 1.25rem;">
+        <button type="button" id="btn-simulate-biometric" class="btn-primary" style="background: linear-gradient(135deg, #06b6d4, #10b981); font-size: 0.8rem; padding: 0.6rem 1rem;">
+          ⚡ Verify Sensor Touch
+        </button>
+        <button type="button" id="btn-cancel-biometric" class="nav-link" style="border: 1px solid var(--border-subtle); font-size: 0.8rem; padding: 0.6rem 1rem;">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       3. Main Authenticated Sentinel Triage Studio Workstation
+       ========================================================================= -->
+  <div id="app-wrapper" style="display: none;">
+
+    <!-- Navigation Header -->
+    <header class="header">
+      <div class="brand">
+        <div class="brand__icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M9 12l2 2 4-4"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand__title" style="display: inline; font-size: 1.15rem;">Sentinel Triage Studio</h1>
+          <span class="brand__badge">Enterprise Shield v2.4</span>
+        </div>
+      </div>
+
+      <!-- Header User Profile & System Status -->
+      <div class="header__meta" style="display: flex; align-items: center; gap: 1rem;">
+        
+        <!-- Logged-in User Profile Widget -->
+        <div id="user-profile-widget" class="user-profile-widget">
+          <div id="user-avatar-badge" class="user-avatar-badge">SK</div>
+          <div class="user-meta-info">
+            <span id="user-display-name" class="user-meta-name">Smit Kulkarni</span>
+            <span id="user-display-clearance" class="user-meta-clearance">Senior Risk Investigator</span>
           </div>
-          <div class="status-pill" style="border-color: var(--color-fraud); color: var(--color-fraud);">
-            Fraud Blocked: <strong id="batch-stat-fraud" style="margin-left: 4px;">0</strong>
+          <div id="user-biometric-tag" class="biometric-verified-tag">
+            <span>🛡️</span> Biometric Active
           </div>
-          <div class="status-pill" style="border-color: var(--color-review); color: var(--color-review);">
-            Review Needed: <strong id="batch-stat-review" style="margin-left: 4px;">0</strong>
+          <button type="button" id="btn-signout" class="btn-signout" title="Lock Workstation & Sign Out">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Lock
+          </button>
+        </div>
+
+        <div id="header-status-pill" class="status-pill">
+          <span class="status-dot"></span> Pipeline Active
+        </div>
+        <div id="header-supabase-pill" class="status-pill" style="display: none; border-color: rgba(16, 185, 129, 0.4);">
+          <span class="status-dot" style="background: #10b981;"></span> Supabase Cloud Active
+        </div>
+        <a href="/docs" target="_blank" class="nav-link" title="OpenAPI Swagger Documentation">API Docs ↗</a>
+        <a href="/api/v1/model/metadata" target="_blank" class="nav-link" title="Active Model Benchmark Metrics">Model Registry ↗</a>
+      </div>
+    </header>
+
+    <main class="container">
+
+      <!-- KPI Ribbon -->
+      <section class="kpi-grid" aria-label="Session Metrics">
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <span>Transactions Evaluated</span>
+            <span>⚡</span>
           </div>
-          <div class="status-pill" style="border-color: var(--color-legit); color: var(--color-legit);">
-            Approved: <strong id="batch-stat-approved" style="margin-left: 4px;">0</strong>
+          <div id="kpi-total-scored" class="kpi-value">0</div>
+          <div class="kpi-subtext">Total requests processed this session</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <span>Fraud Block Rate</span>
+            <span style="color: var(--color-fraud);">▲</span>
           </div>
+          <div id="kpi-fraud-rate" class="kpi-value" style="color: var(--color-fraud);">0.0%</div>
+          <div class="kpi-subtext">High risk (Threshold &ge; 35%)</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <span>Manual Review Rate</span>
+            <span style="color: var(--color-review);">●</span>
+          </div>
+          <div id="kpi-review-rate" class="kpi-value" style="color: var(--color-review);">0.0%</div>
+          <div class="kpi-subtext">Medium risk (20% - 35% triage)</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <span>Average Latency</span>
+            <span style="color: var(--color-legit);">⏱</span>
+          </div>
+          <div id="kpi-avg-latency" class="kpi-value" style="color: var(--color-cyan);">0.0 ms</div>
+          <div class="kpi-subtext">End-to-end inference turnaround</div>
+        </div>
+      </section>
+
+      <!-- View Mode Switcher -->
+      <nav class="view-switcher" aria-label="Workstation Views">
+        <button id="tab-single" class="view-btn active" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Single Transaction Triage
+        </button>
+        <button id="tab-batch" class="view-btn" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Batch CSV Processor
+        </button>
+      </nav>
+
+      <!-- View 1: Single Transaction Triage -->
+      <section id="view-single-panel" class="workspace-grid">
+        
+        <!-- Left Column: Input Form & Profiles -->
+        <article class="glass-panel">
+          <div class="panel-header">
+            <h2 class="panel-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+              Transaction Parameters
+            </h2>
+            <button id="btn-reset" class="nav-link" type="button" style="border: 1px solid var(--border-subtle);">Reset</button>
+          </div>
+
+          <!-- Operational Inspection Profiles (Free of demo labels) -->
+          <div class="presets-section">
+            <div class="presets-label">Operational Inspection Profiles:</div>
+            <div class="preset-buttons">
+              <button id="btn-preset-legit" class="preset-btn preset-btn--legit" type="button" title="Load Standard Retail Sample">
+                <span>🟢</span> Standard Retail ($24.50)
+              </button>
+              <button id="btn-preset-review" class="preset-btn preset-btn--review" type="button" title="Load Suspicious Velocity Sample">
+                <span>🟡</span> Velocity Spike ($680.00)
+              </button>
+              <button id="btn-preset-fraud" class="preset-btn preset-btn--fraud" type="button" title="Load High Risk Compromise Sample">
+                <span>🔴</span> Compromised Vector ($1,489.00)
+              </button>
+              <button id="btn-preset-random" class="preset-btn" type="button" title="Synthesize New Transaction Vector">
+                <span>🎲</span> Synthesize
+              </button>
+            </div>
+          </div>
+
+          <form id="transaction-form">
+            <div class="form-grid">
+              <div class="form-group form-group--full">
+                <label class="form-label" for="input-tx-id">Transaction Identifier</label>
+                <input type="text" id="input-tx-id" class="form-input" required placeholder="TX-90218412">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="input-amount">Monetary Amount ($ USD)</label>
+                <input type="number" step="0.01" min="0" id="input-amount" class="form-input" required placeholder="149.50">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="input-time">Elapsed Time (Seconds)</label>
+                <input type="number" step="any" min="0" id="input-time" class="form-input" required placeholder="450.0">
+              </div>
+            </div>
+
+            <!-- Collapsible PCA Matrix -->
+            <div class="features-accordion">
+              <div id="accordion-toggle" class="accordion-header">
+                <span>PCA Behavioral Features ($V_1$ to $V_{28}$)</span>
+                <span id="accordion-arrow">▼</span>
+              </div>
+              <div id="accordion-body" class="accordion-body" style="display: none;">
+                <div id="pca-fields-container" style="display: contents;"></div>
+              </div>
+            </div>
+
+            <button id="btn-submit" type="submit" class="btn-primary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Analyze Risk with AI
+            </button>
+          </form>
+        </article>
+
+        <!-- Right Column: Risk Evaluation & Explainability -->
+        <article class="glass-panel">
+          <div class="panel-header">
+            <h2 class="panel-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              Risk Assessment & Decision
+            </h2>
+            <div class="meta-stats-row">
+              <span id="eval-latency">0.0 ms</span>
+              <span id="eval-threshold">Cutoff: 35.0%</span>
+            </div>
+          </div>
+
+          <!-- SVG Circular Radial Meter -->
+          <div class="risk-hero">
+            <div class="gauge-wrapper">
+              <svg class="gauge-svg" viewBox="0 0 200 200">
+                <circle class="gauge-bg" cx="100" cy="100" r="90"></circle>
+                <circle id="gauge-bar" class="gauge-bar" cx="100" cy="100" r="90"></circle>
+              </svg>
+              <div class="gauge-center-text">
+                <span id="gauge-percent" class="gauge-percent">0.00%</span>
+                <span class="gauge-sublabel">Fraud Probability</span>
+              </div>
+            </div>
+
+            <!-- Dynamic Actionable Decision Badge -->
+            <div id="decision-badge" class="decision-badge decision-badge--legit">
+              <span id="decision-text">APPROVE TRANSACTION</span>
+            </div>
+          </div>
+
+          <!-- Tree SHAP Waterfall Panel -->
+          <div class="explain-panel">
+            <div class="panel-title" style="font-size: 0.95rem; margin-bottom: 0.5rem;">
+              <span>Tree SHAP Forensic Breakdown</span>
+            </div>
+            <div id="factors-container">
+              <div style="padding: 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
+                Execute transaction evaluation to inspect per-feature Shapley impact values.
+              </div>
+            </div>
+          </div>
+        </article>
+
+      </section>
+
+      <!-- View 2: Batch CSV Processor (Toggled) -->
+      <section id="view-batch-panel" class="glass-panel" style="display: none;">
+        <div class="panel-header">
+          <h2 class="panel-title">Batch Transaction Upload & Vectorized Evaluation</h2>
+          <button id="btn-download-sample-csv" class="nav-link" type="button" style="border: 1px solid var(--border-subtle);">
+            📥 Download Production Batch CSV Template
+          </button>
+        </div>
+
+        <div id="csv-dropzone" class="dropzone">
+          <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Drag & drop production CSV file</h3>
+          <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.25rem;">
+            Must contain columns: <code>Time, Amount, V1, V2, ... V28</code> (up to 1,000 rows)
+          </p>
+          <input type="file" id="csv-file-input" accept=".csv" style="display: none;">
+          <button id="btn-browse-file" class="btn-primary" type="button" style="width: auto; display: inline-flex;">
+            Browse File from Disk
+          </button>
+        </div>
+
+        <div id="batch-results-container" style="display: none;">
+          <div class="panel-header" style="margin-top: 1.5rem;">
+            <h3 class="panel-title">Evaluation Summary</h3>
+            <span id="batch-stats-summary" style="font-size: 0.85rem; color: var(--text-secondary);"></span>
+          </div>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Row</th>
+                  <th>Amount</th>
+                  <th>Risk Probability</th>
+                  <th>Decision</th>
+                  <th>Latency</th>
+                </tr>
+              </thead>
+              <tbody id="batch-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Audit History Trail -->
+      <section class="glass-panel" style="margin-top: 2rem;">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
+            Compliance & Triage Audit Trail
+          </h2>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Real-time persistent audit logs</span>
         </div>
 
         <div class="table-wrapper">
@@ -250,51 +487,27 @@
             <thead>
               <tr>
                 <th>Transaction ID</th>
-                <th>Fraud Probability</th>
+                <th>Amount</th>
+                <th>Risk Score</th>
                 <th>Decision</th>
-                <th>Avg Latency</th>
+                <th>Latency</th>
+                <th>Timestamp</th>
               </tr>
             </thead>
-            <tbody id="batch-results-tbody"></tbody>
+            <tbody id="audit-tbody">
+              <tr>
+                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">
+                  No transactions evaluated in this session yet. Execute an operational profile above to begin triage.
+                </td>
+              </tr>
+            </tbody>
           </table>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Recent Audit Trail Section -->
-    <section class="audit-section">
-      <div class="panel-header">
-        <h2 class="panel-title" style="font-size: 1rem;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
-          Session Triage Audit Trail
-        </h2>
-        <span style="font-size: 0.75rem; color: var(--text-muted);">Last 25 transactions scored</span>
-      </div>
+    </main>
 
-      <div class="table-wrapper">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Transaction ID</th>
-              <th>Amount</th>
-              <th>Risk Score</th>
-              <th>Decision</th>
-              <th>Latency</th>
-              <th>Timestamp</th>
-            </tr>
-          </thead>
-          <tbody id="audit-tbody">
-            <tr>
-              <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">
-                No transactions evaluated yet. Use a preset above or click "Analyze Risk with AI".
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-  </main>
+  </div>
 
   <script type="module" src="js/app.js"></script>
 </body>

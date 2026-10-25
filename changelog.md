@@ -19,6 +19,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added (Enterprise Security & Biometrics)
+- Implemented Enterprise Authentication gateway in `frontend/src/index.html` with Sign In and Create Account modes.
+- Added `frontend/src/js/auth.js` providing WebAuthn / FIDO2 Passkey biometric authentication (Windows Hello, Touch ID, Face ID).
+- Added interactive Biometric Sensor modal with animated circular fingerprint scanner and sweeping laser HUD.
+- Added password strength meter, remember-workstation persistent session management, and clearance role tier assignments.
+- Added header Analyst Clearance Profile widget (`Smit Kulkarni`, `Level 3 · Senior Risk Investigator`, `🛡️ Biometric Active`, Lock/Sign-out action).
+
+### Removed & Cleaned
+- Completely removed demo terminology, demo placeholders (`tx_demo_01`), and demo CSV naming from frontend and backend presets.
+- Upgraded transaction IDs to enterprise formatting (`TX-892104`, `TX-492105`, `TX-792106`, `TX-90218412`).
+- Replaced demo preset labels with operational profiles (**Standard Retail**, **Velocity Spike**, **Compromised Vector**).
+
 ### Added
 - Root-level orchestration `package.json` providing coordinated scripts (`npm run backend:dev`, `npm run frontend:dev`, `npm run backend:test`).
 - Docker Compose dual-service configuration for frontend (port 3000) and backend (port 8000).
@@ -34,12 +46,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated GitHub Actions CI workflow to run independent test jobs for backend (Python 3.10/3.11 pytest) and frontend (TypeScript check).
   - Updated master `README.md` with complete installation, startup, and dual-run instructions.
 
-### Added (Supabase Integration)
-- Integrated Supabase client helpers and SSR package (`@supabase/supabase-js`, `@supabase/ssr`).
-- Created `frontend/.env.local` and `frontend/.env` with Supabase connection credentials.
-- Created `frontend/src/page.tsx` with server component data fetching.
-- Created `frontend/src/utils/supabase/server.ts`, `client.ts`, and `middleware.ts`.
-- Installed Supabase agent skills (`supabase`, `supabase-postgres-best-practices`) in `.agents/skills/`.
+### Added (Supabase Cloud PostgreSQL Integration)
+- Created `public.fraud_audit_records` table in Supabase project `eufrawprayanwthhuvaj` with indexes and Row-Level Security (RLS).
+- Created `public.analyst_profiles` table for clearance role and biometric passkey enrollment tracking.
+- Created `frontend/src/js/supabaseClient.js` delivering direct PostgREST synchronization and live audit trail fetching.
+- Added asynchronous non-blocking worker thread in `backend/src/db/database.py` (`sync_record_to_supabase_async`) keeping scoring latency under 15ms.
+- Added `GET /api/v1/analytics/supabase-history` endpoint in `backend/src/api/routes/analytics.py`.
+- Updated `frontend/src/page.tsx` Next.js Server Component to query live fraud records and analyst clearance profiles directly from Supabase.
+- Passed Supabase security audit via `get_advisors` with 0 security lints or RLS policy vulnerabilities.
 
 ### Planned for v0.6.0
 - [ ] Streaming real-time Kafka transaction consumer.
