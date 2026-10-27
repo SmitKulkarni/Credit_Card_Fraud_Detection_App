@@ -8,9 +8,25 @@ import { updateRiskGauge, renderExplainabilityWaterfall } from './chart.js';
 import { auth } from './auth.js';
 import { saveAuditToSupabase, fetchLatestAuditsFromSupabase, isSupabaseConfigured } from './supabaseClient.js';
 
-const API_BASE = window.location.origin.includes('8000') 
-  ? `${window.location.origin}/api/v1`
-  : 'http://127.0.0.1:8000/api/v1';
+export function getApiBase() {
+  const custom = localStorage.getItem('SENTINEL_API_BASE');
+  if (custom) return custom.replace(/\/+$/, '');
+  if (typeof window !== 'undefined' && window.__ENV__?.NEXT_PUBLIC_API_URL) {
+    return window.__ENV__.NEXT_PUBLIC_API_URL.replace(/\/+$/, '');
+  }
+  if (typeof window !== 'undefined') {
+    if (window.location.port === '8000' || window.location.pathname.startsWith('/dashboard')) {
+      return `${window.location.origin}/api/v1`;
+    }
+    // When served via Next.js or cloud host on HTTPS, use relative /api/v1 (proxied by Next.js rewrites)
+    if (window.location.protocol === 'https:' || window.location.port === '3000') {
+      return `${window.location.origin}/api/v1`;
+    }
+  }
+  return 'http://127.0.0.1:8000/api/v1';
+}
+
+const API_BASE = getApiBase();
 
 let auditHistory = [];
 let isStudioInitialized = false;
