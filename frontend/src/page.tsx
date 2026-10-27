@@ -46,7 +46,7 @@ export default async function Page() {
               audits.map((a: any) => (
                 <tr key={a.id} style={{ borderBottom: '1px solid #1e293b' }}>
                   <td style={{ padding: '0.75rem 1rem', fontWeight: 600 }}>{a.transaction_id}</td>
-                  <td style={{ padding: '0.75rem 1rem' }}>${Number(a.amount).toFixed(2)}</td>
+                  <td style={{ padding: '0.75rem 1rem' }}>₹{Number(a.amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                   <td style={{ padding: '0.75rem 1rem' }}>{(Number(a.fraud_probability) * 100).toFixed(2)}%</td>
                   <td style={{ padding: '0.75rem 1rem', color: a.decision === 'APPROVE' ? '#10b981' : '#ef4444' }}>
                     {a.decision}

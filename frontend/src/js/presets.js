@@ -1,13 +1,13 @@
 /**
- * Production transaction scenario definitions for Sentinel Triage Studio.
+ * Production transaction scenario definitions for Sentinel Triage Studio (Indian Rupee ₹ INR).
  */
 
 export const PRESETS = {
   legitimate_grocery: {
-    title: "Standard Retail ($24.50)",
+    title: "Standard Retail (₹2,050.00)",
     description: "Routine low-value physical retail purchase with card present.",
     transactionId: "TX-892104",
-    amount: 24.50,
+    amount: 2050.00,
     time: 450.0,
     features: {
       V1: 0.05, V2: -0.12, V3: 0.45, V4: -0.22, V5: 0.15,
@@ -20,10 +20,10 @@ export const PRESETS = {
   },
 
   suspicious_velocity: {
-    title: "Suspicious Velocity ($680.00)",
+    title: "Suspicious Velocity (₹56,500.00)",
     description: "Elevated transaction amount with rapid consecutive authorization attempts.",
     transactionId: "TX-492105",
-    amount: 680.00,
+    amount: 56500.00,
     time: 1200.0,
     features: {
       V1: -0.45, V2: 0.85, V3: -0.65, V4: 1.95, V5: -0.35,
@@ -36,10 +36,10 @@ export const PRESETS = {
   },
 
   confirmed_fraud: {
-    title: "High Risk Compromise ($1,489.00)",
+    title: "High Risk Compromise (₹1,24,000.00)",
     description: "Severe behavioral deviations on V14, V12, V17 with rapid velocity indicator.",
     transactionId: "TX-792106",
-    amount: 1489.00,
+    amount: 124000.00,
     time: 800.0,
     features: {
       V1: -3.20, V2: 2.80, V3: -4.50, V4: 4.10, V5: -2.10,
@@ -53,13 +53,13 @@ export const PRESETS = {
 };
 
 /**
- * Generates randomized production transaction parameters for stress-testing.
+ * Generates randomized production transaction parameters in INR.
  */
 export function generateRandomTransaction() {
   const isFraud = Math.random() < 0.3;
   const amount = isFraud 
-    ? Math.round((Math.random() * 1500 + 200) * 100) / 100
-    : Math.round((Math.random() * 80 + 5) * 100) / 100;
+    ? Math.round((Math.random() * 120000 + 15000) * 100) / 100
+    : Math.round((Math.random() * 6000 + 400) * 100) / 100;
   
   const features = {};
   for (let i = 1; i <= 28; i++) {

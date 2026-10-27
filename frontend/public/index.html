@@ -328,13 +328,13 @@
             <div class="presets-label">Operational Inspection Profiles:</div>
             <div class="preset-buttons">
               <button id="btn-preset-legit" class="preset-btn preset-btn--legit" type="button" title="Load Standard Retail Sample">
-                <span>🟢</span> Standard Retail ($24.50)
+                <span>🟢</span> Standard Retail (₹2,050.00)
               </button>
               <button id="btn-preset-review" class="preset-btn preset-btn--review" type="button" title="Load Suspicious Velocity Sample">
-                <span>🟡</span> Velocity Spike ($680.00)
+                <span>🟡</span> Velocity Spike (₹56,500.00)
               </button>
               <button id="btn-preset-fraud" class="preset-btn preset-btn--fraud" type="button" title="Load High Risk Compromise Sample">
-                <span>🔴</span> Compromised Vector ($1,489.00)
+                <span>🔴</span> Compromised Vector (₹1,24,000.00)
               </button>
               <button id="btn-preset-random" class="preset-btn" type="button" title="Synthesize New Transaction Vector">
                 <span>🎲</span> Synthesize
@@ -350,20 +350,20 @@
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="input-amount">Monetary Amount ($ USD)</label>
-                <input type="number" step="0.01" min="0" id="input-amount" class="form-input" required placeholder="149.50">
+                <label class="form-label" for="input-amount">Monetary Amount (₹ INR)</label>
+                <input type="number" step="0.01" min="0" id="input-amount" class="form-input" required placeholder="0.00">
               </div>
 
               <div class="form-group">
                 <label class="form-label" for="input-time">Elapsed Time (Seconds)</label>
-                <input type="number" step="any" min="0" id="input-time" class="form-input" required placeholder="450.0">
+                <input type="number" step="any" min="0" id="input-time" class="form-input" required placeholder="0.0">
               </div>
             </div>
 
             <!-- Collapsible PCA Matrix -->
             <div class="features-accordion">
               <div id="accordion-toggle" class="accordion-header">
-                <span>PCA Behavioral Features ($V_1$ to $V_{28}$)</span>
+                <span>PCA Behavioral Features (V₁ to V₂₈)</span>
                 <span id="accordion-arrow">▼</span>
               </div>
               <div id="accordion-body" class="accordion-body" style="display: none;">
@@ -460,7 +460,7 @@
               <thead>
                 <tr>
                   <th>Row</th>
-                  <th>Amount</th>
+                  <th>Amount (₹ INR)</th>
                   <th>Risk Probability</th>
                   <th>Decision</th>
                   <th>Latency</th>
@@ -487,7 +487,7 @@
             <thead>
               <tr>
                 <th>Transaction ID</th>
-                <th>Amount</th>
+                <th>Amount (₹ INR)</th>
                 <th>Risk Score</th>
                 <th>Decision</th>
                 <th>Latency</th>
@@ -497,7 +497,7 @@
             <tbody id="audit-tbody">
               <tr>
                 <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">
-                  No transactions evaluated in this session yet. Execute an operational profile above to begin triage.
+                  No transactions evaluated yet. Enter transaction parameters and analyze risk to begin triage.
                 </td>
               </tr>
             </tbody>

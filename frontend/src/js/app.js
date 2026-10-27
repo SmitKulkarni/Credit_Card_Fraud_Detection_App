@@ -34,12 +34,8 @@ let isStudioInitialized = false;
 document.addEventListener('DOMContentLoaded', () => {
   initAuthUI();
 
-  // If already authenticated via restored session, launch workstation
-  if (auth.isAuthenticated()) {
-    showAuthenticatedWorkstation(auth.getCurrentUser());
-  } else {
-    showAuthScreen();
-  }
+  // Always present the Enterprise Login screen first when opening the application link
+  showAuthScreen();
 });
 
 /* ==========================================================================
@@ -254,7 +250,7 @@ function showAuthenticatedWorkstation(user) {
   if (!isStudioInitialized) {
     initPcaInputs();
     initStudioEventListeners();
-    loadPreset('legitimate_grocery');
+    resetForm();
     checkSystemHealth();
     fetchAnalyticsStats();
 
@@ -308,8 +304,13 @@ function initStudioEventListeners() {
   // Form Submission
   document.getElementById('transaction-form')?.addEventListener('submit', handleFormSubmit);
 
-  // Reset Button
-  document.getElementById('btn-reset')?.addEventListener('click', () => loadPreset('legitimate_grocery'));
+  // Reset Button & Signout / Lock Workstation
+  document.getElementById('btn-reset')?.addEventListener('click', resetForm);
+  document.getElementById('btn-signout')?.addEventListener('click', () => {
+    auth.signOut();
+    resetForm();
+    showAuthScreen();
+  });
 
   // Accordion Toggle
   const accordionHeader = document.getElementById('accordion-toggle');
@@ -357,6 +358,20 @@ function loadPreset(presetKey) {
     if (input) {
       input.value = p.features[`V${i}`] !== undefined ? p.features[`V${i}`] : 0.0;
     }
+  }
+}
+
+function resetForm() {
+  const txInput = document.getElementById('input-tx-id');
+  const amountInput = document.getElementById('input-amount');
+  const timeInput = document.getElementById('input-time');
+  if (txInput) txInput.value = '';
+  if (amountInput) amountInput.value = '';
+  if (timeInput) timeInput.value = '';
+
+  for (let i = 1; i <= 28; i++) {
+    const input = document.getElementById(`input-v${i}`);
+    if (input) input.value = '0.0';
   }
 }
 
@@ -489,7 +504,7 @@ function renderAuditTable() {
     return `
       <tr>
         <td><strong>${escapeHtml(row.id)}</strong></td>
-        <td>$${row.amount.toFixed(2)}</td>
+        <td>₹${Number(row.amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
         <td>${(row.probability * 100).toFixed(2)}%</td>
         <td><span class="${tagClass}">${escapeHtml(row.decision)}</span></td>
         <td>${row.latency} ms</td>
@@ -671,10 +686,11 @@ function renderBatchResults(results) {
     if (item.decision === 'BLOCK_TRANSACTION') style = 'color: var(--color-fraud); font-weight: 700;';
     else if (item.decision === 'MANUAL_REVIEW') style = 'color: var(--color-review); font-weight: 700;';
 
+    const amt = item.amount !== undefined ? item.amount : (Math.random() * 25000 + 500);
     return `
       <tr>
         <td>${escapeHtml(item.transactionId)}</td>
-        <td>$${(Math.random()*200 + 10).toFixed(2)}</td>
+        <td>₹${Number(amt).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
         <td>${(item.fraudProbability * 100).toFixed(2)}%</td>
         <td style="${style}">${escapeHtml(item.decision)}</td>
         <td>${item.latencyMs} ms</td>
@@ -685,21 +701,21 @@ function renderBatchResults(results) {
 function downloadSampleCsv() {
   let csv = 'transactionId,Amount,Time,' + Array.from({length: 28}, (_, i) => `V${i+1}`).join(',') + '\n';
   
-  // 5 standard retail rows
+  // 5 standard retail rows (₹500 - ₹3,000)
   for (let i = 1; i <= 5; i++) {
     const feats = Array.from({length: 28}, () => ((Math.random() - 0.5) * 0.4).toFixed(3)).join(',');
-    csv += `TX-100${i}84,${(Math.random()*50 + 10).toFixed(2)},${i*100},${feats}\n`;
+    csv += `TX-100${i}84,${(Math.random()*2500 + 500).toFixed(2)},${i*100},${feats}\n`;
   }
-  // 3 suspicious velocity rows
+  // 3 suspicious velocity rows (₹40,000 - ₹65,000)
   for (let i = 1; i <= 3; i++) {
     const feats = Array.from({length: 28}, (_, idx) => {
       if (idx === 3 || idx === 10) return (1.8 + Math.random()*0.5).toFixed(3);
       if (idx === 13) return (-2.2 - Math.random()*0.5).toFixed(3);
       return ((Math.random() - 0.5) * 0.8).toFixed(3);
     }).join(',');
-    csv += `TX-500${i}92,${(Math.random()*400 + 500).toFixed(2)},${i*500},${feats}\n`;
+    csv += `TX-500${i}92,${(Math.random()*25000 + 40000).toFixed(2)},${i*500},${feats}\n`;
   }
-  // 2 high compromise rows
+  // 2 high compromise rows (₹1,00,000 - ₹1,50,000)
   for (let i = 1; i <= 2; i++) {
     const feats = Array.from({length: 28}, (_, idx) => {
       if (idx === 3) return (4.2 + Math.random()*0.5).toFixed(3);
@@ -707,7 +723,7 @@ function downloadSampleCsv() {
       if (idx === 11) return (-6.0 - Math.random()*0.5).toFixed(3);
       return ((Math.random() - 0.5) * 1.5).toFixed(3);
     }).join(',');
-    csv += `TX-900${i}15,${(Math.random()*800 + 1200).toFixed(2)},${i*900},${feats}\n`;
+    csv += `TX-900${i}15,${(Math.random()*50000 + 100000).toFixed(2)},${i*900},${feats}\n`;
   }
 
   const blob = new Blob([csv], { type: 'text/csv' });
