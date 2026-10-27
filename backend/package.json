@@ -3,7 +3,7 @@
   "version": "0.5.0",
   "description": "High-performance FastAPI & XGBoost backend for credit card fraud detection",
   "scripts": {
-    "start": "python -m uvicorn src.api.main:app --host 0.0.0.0 --port 8000",
+    "start": "uvicorn src.api.main:app --host 0.0.0.0 --port ${PORT:-8000}",
     "dev": "python -m uvicorn src.api.main:app --host 127.0.0.1 --port 8000 --reload",
     "test": "python -m pytest tests/ -v",
     "train": "python -m src.ml.train --synthetic-samples 25000 --n-estimators 150"

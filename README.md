@@ -239,30 +239,33 @@ This is the recommended modern architecture for decoupled web applications.
 Deploying to **Render**, **Railway**, or **Fly.io**:
 
 1. **Push your code to GitHub**:
-   Ensure all changes are committed and pushed to your GitHub repository.
-
-2. **Create New Web Service on Render / Railway**:
-   - Log into [Render](https://render.com) or [Railway](https://railway.app).
-   - Select **New Web Service** and connect your GitHub repository.
-   - Set **Root Directory**: `backend`
-   - Set **Runtime**: `Python 3` (or **Docker** using `backend/Dockerfile`).
-   - If using Python native runtime:
-     - **Build Command**: `pip install -r requirements.txt`
-     - **Start Command**: `uvicorn src.api.main:app --host 0.0.0.0 --port $PORT`
-
-3. **Configure Backend Environment Variables**:
-   Under the service **Environment Variables** tab, define:
-   ```env
-   ENVIRONMENT=production
-   PORT=8000
-   HOST=0.0.0.0
-   FRAUD_PROBABILITY_THRESHOLD=0.35
-   REVIEW_PROBABILITY_THRESHOLD=0.20
-   DATABASE_URL=sqlite:///./data/fraud_audit.db
-   CORS_ORIGINS=["https://your-frontend-domain.vercel.app","http://localhost:3000"]
-   SUPABASE_URL=https://eufrawprayanwthhuvaj.supabase.co
-   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+   Ensure all changes are committed and pushed to your GitHub repository:
+   ```bash
+   git add .
+   git commit -m "fix: render deployment configuration and dependencies"
+   git push origin main
    ```
+
+2. **Deploy via Render Blueprint (Recommended - 1 Click)**:
+   - Go to [Render Dashboard](https://dashboard.render.com).
+   - Click **New +** -> **Blueprint**.
+   - Connect `Credit_Card_Fraud_Detection_App`.
+   - Render automatically reads [`render.yaml`](file:///d:/AIDS%20project/Credit_Card_Fraud_Detection_App/render.yaml) and configures the Python runtime, build command, start command, health check, and environment variables!
+
+3. **Or Deploy Manually as a Web Service**:
+   - Click **New +** -> **Web Service** and connect your repository.
+   - **Root Directory**: `backend` *(CRITICAL: Must be set to `backend`, not root!)*
+   - **Runtime**: `Python 3`
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `uvicorn src.api.main:app --host 0.0.0.0 --port $PORT`
+   - **Environment Variables**:
+     - `PYTHON_VERSION`: `3.11.9`
+     - `ENVIRONMENT`: `production`
+     - `CORS_ORIGINS`: `["*"]` *(or your Vercel frontend URL)*
+     - `DATABASE_URL`: `sqlite:///./data/fraud_audit.db`
+     - `SUPABASE_URL`: `https://eufrawprayanwthhuvaj.supabase.co`
+     - `SUPABASE_KEY`: `sb_publishable_3YczReP6yNU8WPGQuS8V9A_CFJaeYA1`
+     *(Note: Do NOT set `PORT` manually; Render provides `$PORT` dynamically).*
 
 4. **Verify Deployment**:
    Once build completes, verify health via:

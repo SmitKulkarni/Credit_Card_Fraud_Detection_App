@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: fraud-detection-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn src.api.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/v1/health
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: ENVIRONMENT
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: CORS_ORIGINS
+        value: '["*"]'
+      - key: DATABASE_URL
+        value: sqlite:///./data/fraud_audit.db
+      - key: SUPABASE_URL
+        value: https://eufrawprayanwthhuvaj.supabase.co
+      - key: SUPABASE_KEY
+        value: sb_publishable_3YczReP6yNU8WPGQuS8V9A_CFJaeYA1
+      - key: SUPABASE_SYNC_ENABLED
+        value: "true"
+      - key: FRAUD_PROBABILITY_THRESHOLD
+        value: "0.35"
+      - key: REVIEW_PROBABILITY_THRESHOLD
+        value: "0.20"

@@ -95,10 +95,11 @@ def create_application() -> FastAPI:
     )
 
     # CORS Middleware
+    has_wildcard = "*" in settings.CORS_ORIGINS
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.CORS_ORIGINS,
-        allow_credentials=True,
+        allow_credentials=not has_wildcard,
         allow_methods=["*"],
         allow_headers=["*"],
     )
@@ -161,3 +162,9 @@ def create_application() -> FastAPI:
 
 
 app = create_application()
+
+
+if __name__ == "__main__":
+    import uvicorn
+    _settings = get_settings()
+    uvicorn.run("src.api.main:app", host=_settings.HOST, port=_settings.PORT, reload=_settings.DEBUG)

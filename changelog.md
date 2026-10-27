@@ -19,7 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed (Dev Workflow & Next.js App Router)
+### Fixed (Dev Workflow & Production Deployment)
+- Fixed backend deployment failures caused by missing `sqlalchemy` and `python-multipart` dependencies in [backend/requirements.txt](file:///d:/AIDS%20project/Credit_Card_Fraud_Detection_App/backend/requirements.txt).
+- Updated [backend/src/api/config.py](file:///d:/AIDS%20project/Credit_Card_Fraud_Detection_App/backend/src/api/config.py) with resilient `CORS_ORIGINS` validator accepting raw URLs, comma-separated lists, and JSON arrays, preventing Pydantic startup crashes on cloud platforms.
+- Fixed CORS credential conflict in [backend/src/api/main.py](file:///d:/AIDS%20project/Credit_Card_Fraud_Detection_App/backend/src/api/main.py) when wildcards are present, preventing browser origin rejection.
+- Enhanced model artifact resolution paths in `Settings` so `.joblib` artifacts are loaded whether executed from `backend/` or the root workspace.
+- Updated [backend/Dockerfile](file:///d:/AIDS%20project/Credit_Card_Fraud_Detection_App/backend/Dockerfile) entrypoint and healthcheck to dynamically bind to `$PORT` provided by cloud environments (Render, Railway, Cloud Run).
 - Added missing root `npm run dev` script using `concurrently` to spin up both FastAPI backend (:8000) and Next.js frontend (:3000) simultaneously with unified color-coded logging.
 - Created `frontend/src/app/layout.tsx` and `frontend/src/app/page.tsx` resolving Next.js 15 App Router directory requirement (`Couldn't find any 'pages' or 'app' directory`).
 - Created `frontend/next.config.mjs` configuring `outputFileTracingRoot` to resolve monorepo multi-lockfile workspace inference warnings.
