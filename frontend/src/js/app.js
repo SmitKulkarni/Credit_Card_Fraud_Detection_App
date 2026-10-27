@@ -252,21 +252,7 @@ function showAuthenticatedWorkstation(user) {
     checkSystemHealth();
     fetchAnalyticsStats();
 
-    // Load persistent audit trail from Supabase Cloud
-    fetchLatestAuditsFromSupabase(15).then(records => {
-      if (records && records.length > 0 && auditHistory.length === 0) {
-        auditHistory = records.map(r => ({
-          id: r.transaction_id,
-          amount: parseFloat(r.amount) || 0.0,
-          probability: parseFloat(r.fraud_probability) || 0.0,
-          decision: r.decision,
-          latency: parseFloat(r.latency_ms) || 0.0,
-          timestamp: new Date(r.created_at).toLocaleTimeString()
-        }));
-        renderAuditTable();
-      }
-    }).catch(err => console.warn('Could not load Supabase audit history:', err));
-
+    // Keep audit trail clean on initial start until transactions are evaluated
     isStudioInitialized = true;
   }
 }
@@ -286,7 +272,7 @@ function initPcaInputs() {
     html += `
       <div class="pca-input-group">
         <label class="pca-label" for="input-v${i}" title="${isSpecial ? 'Key Fraud Factor' : ''}">${badge}V${i}</label>
-        <input type="number" step="any" id="input-v${i}" class="pca-input" value="0.0">
+        <input type="number" step="any" id="input-v${i}" class="pca-input" placeholder="0.0">
       </div>`;
   }
   container.innerHTML = html;
@@ -415,9 +401,12 @@ function resetForm() {
   if (cardInput) cardInput.value = '';
   if (holderInput) holderInput.value = '';
 
+  const singleBadge = document.getElementById('single-card-badge');
+  if (singleBadge) singleBadge.textContent = '💳 Card';
+
   for (let i = 1; i <= 28; i++) {
     const input = document.getElementById(`input-v${i}`);
-    if (input) input.value = '0.0';
+    if (input) input.value = '';
   }
 }
 
@@ -603,10 +592,14 @@ function extractFormData() {
     features[`V${i}`] = isNaN(val) ? 0.0 : val;
   }
 
+  const txVal = document.getElementById('input-tx-id')?.value.trim();
+  const timeInput = document.getElementById('input-time');
+  const timeVal = timeInput ? (parseFloat(timeInput.value) || 0.0) : (Math.floor(Date.now() / 1000) % 172800);
+
   return {
-    transactionId: document.getElementById('input-tx-id').value || `TX-${Math.floor(Math.random() * 90000000 + 10000000)}`,
-    amount: parseFloat(document.getElementById('input-amount').value) || 0.0,
-    time: parseFloat(document.getElementById('input-time').value) || 0.0,
+    transactionId: txVal || `TX-${Math.floor(Math.random() * 90000000 + 10000000)}`,
+    amount: parseFloat(document.getElementById('input-amount')?.value) || 0.0,
+    time: timeVal,
     cardNumber: document.getElementById('input-card-number')?.value || '',
     cardholder: document.getElementById('input-cardholder')?.value || '',
     merchant: document.getElementById('input-merchant-platform')?.value || 'Online Platform',

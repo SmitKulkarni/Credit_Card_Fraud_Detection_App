@@ -327,38 +327,19 @@
             <button id="btn-reset" class="nav-link" type="button" style="border: 1px solid var(--border-subtle);">Reset</button>
           </div>
 
-          <!-- Operational Inspection Profiles (Free of demo labels) -->
-          <div class="presets-section">
-            <div class="presets-label">Operational Inspection Profiles:</div>
-            <div class="preset-buttons">
-              <button id="btn-preset-legit" class="preset-btn preset-btn--legit" type="button" title="Load Standard Retail Sample">
-                <span>🟢</span> Standard Retail (₹2,050 Rupees)
-              </button>
-              <button id="btn-preset-review" class="preset-btn preset-btn--review" type="button" title="Load Suspicious Velocity Sample">
-                <span>🟡</span> Velocity Spike (₹56,500 Rupees)
-              </button>
-              <button id="btn-preset-fraud" class="preset-btn preset-btn--fraud" type="button" title="Load High Risk Compromise Sample">
-                <span>🔴</span> Compromised Vector (₹1,24,000 Rupees)
-              </button>
-              <button id="btn-preset-random" class="preset-btn" type="button" title="Synthesize New Transaction Vector">
-                <span>🎲</span> Synthesize
-              </button>
-            </div>
-          </div>
-
           <form id="transaction-form">
             <div class="form-grid">
               <div class="form-group form-group--full">
                 <label class="form-label" for="input-card-number">Credit Card Number</label>
                 <div class="card-input-container">
-                  <span id="single-card-badge" class="card-brand-badge">💳 RuPay / Visa</span>
-                  <input type="text" id="input-card-number" class="form-input" placeholder="4532 8912 3456 7890" maxlength="19" autocomplete="cc-number">
+                  <span id="single-card-badge" class="card-brand-badge">💳 Card</span>
+                  <input type="text" id="input-card-number" class="form-input" placeholder="Enter 16-digit Card Number" maxlength="19" autocomplete="cc-number">
                 </div>
               </div>
 
               <div class="form-group">
                 <label class="form-label" for="input-cardholder">Cardholder Name</label>
-                <input type="text" id="input-cardholder" class="form-input" placeholder="Smit Kulkarni" autocomplete="cc-name">
+                <input type="text" id="input-cardholder" class="form-input" placeholder="Enter Cardholder Name" autocomplete="cc-name">
               </div>
 
               <div class="form-group">
@@ -373,9 +354,9 @@
                 </select>
               </div>
 
-              <div class="form-group form-group--full">
-                <label class="form-label" for="input-tx-id">Transaction Identifier</label>
-                <input type="text" id="input-tx-id" class="form-input" required placeholder="TX-90218412">
+              <div class="form-group">
+                <label class="form-label" for="input-tx-id">Transaction ID</label>
+                <input type="text" id="input-tx-id" class="form-input" required placeholder="e.g. TX-100234">
               </div>
 
               <div class="form-group">
@@ -384,11 +365,6 @@
                   <span class="currency-badge">₹ Rupees</span>
                   <input type="number" step="0.01" min="0" id="input-amount" class="form-input" required placeholder="0.00">
                 </div>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label" for="input-time">Elapsed Time (Seconds)</label>
-                <input type="number" step="any" min="0" id="input-time" class="form-input" required placeholder="0.0">
               </div>
             </div>
 
@@ -545,24 +521,24 @@
               <div class="form-group form-group--full">
                 <label class="form-label" for="shop-card-number">Credit Card Number</label>
                 <div class="card-input-container">
-                  <span id="shop-card-badge" class="card-brand-badge">💳 RuPay / Visa</span>
-                  <input type="text" id="shop-card-number" class="form-input" required placeholder="4532 8912 3456 7890" maxlength="19" autocomplete="cc-number">
+                  <span id="shop-card-badge" class="card-brand-badge">💳 Card</span>
+                  <input type="text" id="shop-card-number" class="form-input" required placeholder="Enter 16-digit Card Number" maxlength="19" autocomplete="cc-number">
                 </div>
               </div>
 
               <div class="form-group form-group--full">
                 <label class="form-label" for="shop-card-name">Cardholder Name</label>
-                <input type="text" id="shop-card-name" class="form-input" required placeholder="Smit Kulkarni" autocomplete="cc-name">
+                <input type="text" id="shop-card-name" class="form-input" required placeholder="Enter Cardholder Name" autocomplete="cc-name">
               </div>
 
               <div class="form-group">
                 <label class="form-label" for="shop-card-expiry">Expiry Date</label>
-                <input type="text" id="shop-card-expiry" class="form-input" required placeholder="10/28" maxlength="5">
+                <input type="text" id="shop-card-expiry" class="form-input" required placeholder="MM/YY" maxlength="5">
               </div>
 
               <div class="form-group">
                 <label class="form-label" for="shop-card-cvv">Security CVV</label>
-                <input type="password" id="shop-card-cvv" class="form-input" required placeholder="•••" maxlength="4">
+                <input type="password" id="shop-card-cvv" class="form-input" required placeholder="CVV" maxlength="4">
               </div>
             </div>
 
