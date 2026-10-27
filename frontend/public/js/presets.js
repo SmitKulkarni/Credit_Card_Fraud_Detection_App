@@ -9,6 +9,9 @@ export const PRESETS = {
     transactionId: "TX-892104",
     amount: 2050.00,
     time: 450.0,
+    cardNumber: "4532 8912 3456 8921",
+    cardholder: "Smit Kulkarni",
+    merchant: "Blinkit / Swiggy",
     features: {
       V1: 0.05, V2: -0.12, V3: 0.45, V4: -0.22, V5: 0.15,
       V6: -0.05, V7: 0.18, V8: 0.02, V9: -0.10, V10: 0.05,
@@ -25,6 +28,9 @@ export const PRESETS = {
     transactionId: "TX-492105",
     amount: 56500.00,
     time: 1200.0,
+    cardNumber: "5241 6789 0123 4921",
+    cardholder: "Priya Sharma",
+    merchant: "Amazon India",
     features: {
       V1: -0.45, V2: 0.85, V3: -0.65, V4: 1.95, V5: -0.35,
       V6: -0.55, V7: -0.45, V8: 0.35, V9: -0.80, V10: -1.25,
@@ -41,6 +47,9 @@ export const PRESETS = {
     transactionId: "TX-792106",
     amount: 124000.00,
     time: 800.0,
+    cardNumber: "6080 1234 5678 7921",
+    cardholder: "Unknown Account Holder",
+    merchant: "Digital Gift Card Vault",
     features: {
       V1: -3.20, V2: 2.80, V3: -4.50, V4: 4.10, V5: -2.10,
       V6: -1.80, V7: -3.90, V8: 1.90, V9: -2.80, V10: -4.80,
@@ -74,10 +83,14 @@ export function generateRandomTransaction() {
   }
 
   const randomNum = Math.floor(10000000 + Math.random() * 90000000);
+  const cardDigits = Math.floor(1000 + Math.random() * 9000);
   return {
     transactionId: `TX-${randomNum}`,
     amount: amount,
     time: Math.round(Math.random() * 10000),
+    cardNumber: `4532 8912 3456 ${cardDigits}`,
+    cardholder: "Verified Cardholder",
+    merchant: isFraud ? "Digital Gift Card Vault" : "Amazon India",
     features: features
   };
 }

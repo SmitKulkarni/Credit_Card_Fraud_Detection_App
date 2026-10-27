@@ -424,6 +424,127 @@ body {
   padding-left: 5.6rem;
 }
 
+/* Credit Card Input Container */
+.card-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.card-brand-badge {
+  position: absolute;
+  right: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #38bdf8;
+  background: rgba(14, 165, 233, 0.15);
+  border: 1px solid rgba(14, 165, 233, 0.35);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.card-input-container .form-input {
+  width: 100%;
+  padding-right: 7.5rem;
+  letter-spacing: 0.08em;
+}
+
+/* Online Shopping Platform Storefront */
+.shop-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.95fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 1080px) {
+  .shop-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.product-catalog {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.product-card {
+  background: rgba(30, 41, 59, 0.55);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+}
+
+.product-card:hover {
+  border-color: #38bdf8;
+  background: rgba(30, 41, 59, 0.85);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.2);
+}
+
+.product-card.selected {
+  border-color: #0ea5e9;
+  background: rgba(14, 165, 233, 0.14);
+  box-shadow: 0 0 18px rgba(14, 165, 233, 0.35);
+}
+
+.product-tag {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  padding: 0.2rem 0.45rem;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+  width: fit-content;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.product-tag.risk-high {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+.product-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.4rem;
+}
+
+.product-price {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #38bdf8;
+  margin-top: 0.5rem;
+}
+
+.shop-checkout-card {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+}
+
+.shop-order-summary {
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+}
+
 /* Accordion for PCA Features */
 .features-accordion {
   border: 1px solid var(--border-subtle);
