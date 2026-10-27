@@ -504,7 +504,7 @@ function renderAuditTable() {
     return `
       <tr>
         <td><strong>${escapeHtml(row.id)}</strong></td>
-        <td>₹${Number(row.amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+        <td><strong style="color: #38bdf8;">₹${Number(row.amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong> <span style="font-size: 0.75rem; color: var(--text-muted);">Rupees</span></td>
         <td>${(row.probability * 100).toFixed(2)}%</td>
         <td><span class="${tagClass}">${escapeHtml(row.decision)}</span></td>
         <td>${row.latency} ms</td>
@@ -690,7 +690,7 @@ function renderBatchResults(results) {
     return `
       <tr>
         <td>${escapeHtml(item.transactionId)}</td>
-        <td>₹${Number(amt).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+        <td><strong style="color: #38bdf8;">₹${Number(amt).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong> <span style="font-size: 0.75rem; color: var(--text-muted);">Rupees</span></td>
         <td>${(item.fraudProbability * 100).toFixed(2)}%</td>
         <td style="${style}">${escapeHtml(item.decision)}</td>
         <td>${item.latencyMs} ms</td>

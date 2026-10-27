@@ -4,8 +4,8 @@
 
 export const PRESETS = {
   legitimate_grocery: {
-    title: "Standard Retail (₹2,050.00)",
-    description: "Routine low-value physical retail purchase with card present.",
+    title: "Standard Retail (₹2,050 Rupees)",
+    description: "Routine low-value physical retail purchase with card present in Rupees.",
     transactionId: "TX-892104",
     amount: 2050.00,
     time: 450.0,
@@ -20,8 +20,8 @@ export const PRESETS = {
   },
 
   suspicious_velocity: {
-    title: "Suspicious Velocity (₹56,500.00)",
-    description: "Elevated transaction amount with rapid consecutive authorization attempts.",
+    title: "Suspicious Velocity (₹56,500 Rupees)",
+    description: "Elevated transaction amount in Rupees with rapid consecutive authorization attempts.",
     transactionId: "TX-492105",
     amount: 56500.00,
     time: 1200.0,
@@ -36,8 +36,8 @@ export const PRESETS = {
   },
 
   confirmed_fraud: {
-    title: "High Risk Compromise (₹1,24,000.00)",
-    description: "Severe behavioral deviations on V14, V12, V17 with rapid velocity indicator.",
+    title: "High Risk Compromise (₹1,24,000 Rupees)",
+    description: "Severe behavioral deviations on V14, V12, V17 with high Rupees monetary value.",
     transactionId: "TX-792106",
     amount: 124000.00,
     time: 800.0,

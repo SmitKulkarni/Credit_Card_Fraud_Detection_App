@@ -201,24 +201,24 @@ async def get_preset_scenarios() -> List[PresetScenario]:
     return [
         PresetScenario(
             presetId="legitimate_grocery",
-            title="Standard Retail Purchase",
+            title="Standard Retail Purchase (₹2,050 Rupees)",
             riskCategory="LOW",
-            description="Routine low-value retail purchase with standard cardholder behavioral patterns.",
+            description="Routine low-value retail purchase with standard cardholder behavioral patterns in Rupees.",
             payload=TransactionInput(
                 transactionId="TX-892104",
-                amount=24.50,
+                amount=2050.00,
                 time=450.0,
                 features={f"V{i}": 0.05 for i in range(1, 29)},
             ),
         ),
         PresetScenario(
             presetId="suspicious_velocity",
-            title="Suspicious E-Commerce Velocity",
+            title="Suspicious E-Commerce Velocity (₹56,500 Rupees)",
             riskCategory="MEDIUM",
-            description="Elevated transaction amount with moderate divergence in device and velocity features.",
+            description="Elevated transaction amount in Rupees with moderate divergence in device and velocity features.",
             payload=TransactionInput(
                 transactionId="TX-492105",
-                amount=680.00,
+                amount=56500.00,
                 time=1200.0,
                 features={
                     **{f"V{i}": 0.1 for i in range(1, 29)},
@@ -231,12 +231,12 @@ async def get_preset_scenarios() -> List[PresetScenario]:
         ),
         PresetScenario(
             presetId="confirmed_fraud",
-            title="Confirmed Fraudulent Anomaly",
+            title="Confirmed Fraudulent Anomaly (₹1,24,000 Rupees)",
             riskCategory="HIGH",
-            description="Severe anomaly on critical fraud indicators (V14, V12, V17) with high monetary value.",
+            description="Severe anomaly on critical fraud indicators (V14, V12, V17) with high monetary value in Rupees.",
             payload=TransactionInput(
                 transactionId="TX-792106",
-                amount=1489.00,
+                amount=124000.00,
                 time=800.0,
                 features={
                     **{f"V{i}": -0.5 for i in range(1, 29)},

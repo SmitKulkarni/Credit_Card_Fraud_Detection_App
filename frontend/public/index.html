@@ -328,13 +328,13 @@
             <div class="presets-label">Operational Inspection Profiles:</div>
             <div class="preset-buttons">
               <button id="btn-preset-legit" class="preset-btn preset-btn--legit" type="button" title="Load Standard Retail Sample">
-                <span>🟢</span> Standard Retail (₹2,050.00)
+                <span>🟢</span> Standard Retail (₹2,050 Rupees)
               </button>
               <button id="btn-preset-review" class="preset-btn preset-btn--review" type="button" title="Load Suspicious Velocity Sample">
-                <span>🟡</span> Velocity Spike (₹56,500.00)
+                <span>🟡</span> Velocity Spike (₹56,500 Rupees)
               </button>
               <button id="btn-preset-fraud" class="preset-btn preset-btn--fraud" type="button" title="Load High Risk Compromise Sample">
-                <span>🔴</span> Compromised Vector (₹1,24,000.00)
+                <span>🔴</span> Compromised Vector (₹1,24,000 Rupees)
               </button>
               <button id="btn-preset-random" class="preset-btn" type="button" title="Synthesize New Transaction Vector">
                 <span>🎲</span> Synthesize
@@ -350,8 +350,11 @@
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="input-amount">Monetary Amount (₹ INR)</label>
-                <input type="number" step="0.01" min="0" id="input-amount" class="form-input" required placeholder="0.00">
+                <label class="form-label" for="input-amount">Transaction Amount (Rupees ₹)</label>
+                <div class="currency-input-container">
+                  <span class="currency-badge">₹ Rupees</span>
+                  <input type="number" step="0.01" min="0" id="input-amount" class="form-input" required placeholder="0.00">
+                </div>
               </div>
 
               <div class="form-group">
@@ -460,7 +463,7 @@
               <thead>
                 <tr>
                   <th>Row</th>
-                  <th>Amount (₹ INR)</th>
+                  <th>Amount (Rupees ₹)</th>
                   <th>Risk Probability</th>
                   <th>Decision</th>
                   <th>Latency</th>
@@ -487,7 +490,7 @@
             <thead>
               <tr>
                 <th>Transaction ID</th>
-                <th>Amount (₹ INR)</th>
+                <th>Amount (Rupees ₹)</th>
                 <th>Risk Score</th>
                 <th>Decision</th>
                 <th>Latency</th>

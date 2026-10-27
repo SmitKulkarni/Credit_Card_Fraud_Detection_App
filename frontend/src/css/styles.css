@@ -397,6 +397,33 @@ body {
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
+.currency-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.currency-badge {
+  position: absolute;
+  left: 0.65rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #38bdf8;
+  background: rgba(6, 182, 212, 0.15);
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: 0.02em;
+}
+
+.currency-input-container .form-input {
+  width: 100%;
+  padding-left: 5.6rem;
+}
+
 /* Accordion for PCA Features */
 .features-accordion {
   border: 1px solid var(--border-subtle);
